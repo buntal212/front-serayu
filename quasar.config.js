@@ -149,6 +149,13 @@ export default defineConfig((/* ctx */) => {
             return { manifest: unique }
           },
         ],
+        runtimeCaching: [
+          {
+            urlPattern: /\/.*/,
+            handler: 'NetworkFirst',
+            options: { cacheName: 'pages-cache' },
+          },
+        ],
       }, // optional
       chainWebpackCustomSW(config) {
         config.entry('custom-service-worker').add('./src-pwa/custom-service-worker.js')

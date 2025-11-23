@@ -1,1 +1,12 @@
 // app global css in SCSS form
+html,
+body,
+#q-app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #027be3; /* theme full screen */
+}
+#q-app::before {
+  content: '';
+}

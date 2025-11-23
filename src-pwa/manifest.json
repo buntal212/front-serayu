@@ -2,15 +2,14 @@
   "name": "Sistem Informasi Perumahan Bengawan Indah",
   "short_name": "SIINDAH",
   "description": "Sistem Informasi Perumahan Bengawan Indah",
-  "display": "standalone",
   "orientation": "portrait",
   "prefer_related_applications": false,
   "lang": "id",
   "dir": "ltr",
   "scope": "/",
   "start_url": "/",
-  "background_color": "#ffffff",
-  "theme_color": "#027be3",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
   "icons": [
     {
       "src": "icons/icon-128x128.png",
