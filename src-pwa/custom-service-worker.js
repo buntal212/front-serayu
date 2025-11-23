@@ -15,24 +15,31 @@ self.skipWaiting()
 clientsClaim()
 
 // ----------------------
-// ✅ Precache
+// FIX 1 — remove duplicates (prevent conflict)
 // ----------------------
-const PRECACHE_MANIFEST = [{ url: '/index.html', revision: '1' }, ...self.__WB_MANIFEST]
-precacheAndRoute(PRECACHE_MANIFEST)
+const manifest = self.__WB_MANIFEST.filter(
+  (entry, idx, arr) => arr.findIndex((e) => e.url === entry.url) === idx,
+)
+
+// FIX 2 — DO NOT add anything else manually!
+// Only let Workbox auto-inject manifest
+precacheAndRoute(manifest)
+
 cleanupOutdatedCaches()
 
 // ----------------------
-// ✅ SPA Navigation fallback
+// FIX 3 — Required for SPA fallback
 // ----------------------
-const FALLBACK_HTML = '/index.html' // pastikan ini sesuai path yang di-precache
+const FALLBACK_HTML = '/index.html'
 const navigationHandler = createHandlerBoundToURL(FALLBACK_HTML)
-const navigationRoute = new NavigationRoute(navigationHandler, {
-  denylist: [/^\/workbox-(.)*\.js$/, /^\/__/], // jangan intercept SW dan manifest
-})
-registerRoute(navigationRoute)
+registerRoute(
+  new NavigationRoute(navigationHandler, {
+    denylist: [/^\/workbox-(.)*\.js$/, /^\/__/],
+  }),
+)
 
 // ----------------------
-// ✅ API caching
+// API, image, font, static assets caching
 // ----------------------
 registerRoute(
   ({ url }) => url.pathname.startsWith('/api/'),
@@ -48,9 +55,6 @@ registerRoute(
   }),
 )
 
-// ----------------------
-// ✅ Image caching
-// ----------------------
 registerRoute(
   ({ request }) => request.destination === 'image',
   new CacheFirst({
@@ -64,9 +68,6 @@ registerRoute(
   }),
 )
 
-// ----------------------
-// ✅ Font caching
-// ----------------------
 registerRoute(
   ({ request, url }) =>
     request.destination === 'font' ||
@@ -83,9 +84,6 @@ registerRoute(
   }),
 )
 
-// ----------------------
-// ✅ CSS & JS static assets
-// ----------------------
 registerRoute(
   ({ request }) => request.destination === 'style' || request.destination === 'script',
   new StaleWhileRevalidate({
@@ -99,9 +97,7 @@ registerRoute(
   }),
 )
 
-// ----------------------
-// ✅ Push Notifications
-// ----------------------
+// Push Notifications
 self.addEventListener('push', (event) => {
   const data = event.data?.json() || {}
   const title = data.title || 'Notification'
@@ -127,9 +123,6 @@ self.addEventListener('notificationclick', (event) => {
   )
 })
 
-// ----------------------
-// ✅ Force update SW immediately
-// ----------------------
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting()
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting()
 })

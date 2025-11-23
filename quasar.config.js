@@ -11,7 +11,7 @@ export default defineConfig((/* ctx */) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['axios', 'autologout'],
+    boot: ['axios', 'autologout', 'a2hs'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -141,6 +141,14 @@ export default defineConfig((/* ctx */) => {
       workboxMode: 'InjectManifest',
       workboxOptions: {
         globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+        manifestTransforms: [
+          async (entries) => {
+            const unique = entries.filter(
+              (entry, index, arr) => arr.findIndex((e) => e.url === entry.url) === index,
+            )
+            return { manifest: unique }
+          },
+        ],
       }, // optional
       chainWebpackCustomSW(config) {
         config.entry('custom-service-worker').add('./src-pwa/custom-service-worker.js')
