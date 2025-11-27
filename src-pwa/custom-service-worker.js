@@ -30,7 +30,7 @@ cleanupOutdatedCaches()
 // ----------------------
 // FIX 3 — Required for SPA fallback
 // ----------------------
-const FALLBACK_HTML = '/index.html'
+const FALLBACK_HTML = 'index.html'
 const navigationHandler = createHandlerBoundToURL(FALLBACK_HTML)
 registerRoute(
   new NavigationRoute(navigationHandler, {

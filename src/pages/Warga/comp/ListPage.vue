@@ -7,7 +7,7 @@
         <q-btn
           glossy
           round
-          color="red"
+          color="primary"
           icon="add"
           size="sm"
           push
@@ -40,11 +40,39 @@
         <SkeletonCard v-for="n in 6" :key="'skeleton-' + n" />
       </template>
       <template v-else>
-        <q-card v-for="w in store.items" :key="w.id" flat bordered class="warga-card q-pa-md">
-          <div class="warga-name">{{ w.name }}</div>
-          <!-- <div class="warga-email">{{ w.email }}</div> -->
-          <div class="warga-nik">No. KK: {{ w.nokk || '-' }}</div>
-          <!-- <div class="warga-username">Username: {{ w.username }}</div> -->
+        <q-card
+          v-for="w in store.items"
+          :key="w.id"
+          flat
+          bordered
+          class="warga-card q-pa-md"
+          @click="emits('edit', w)"
+        >
+          <!-- ROW: Nama + Button Delete -->
+          <div class="row items-center justify-between">
+            <div class="warga-name">
+              {{
+                w.nokk === '3574030701890001' || w.nokk === 3574030701890001
+                  ? 'Mas ' + w.name
+                  : 'Bpk. ' + w.name
+              }}
+            </div>
+          </div>
+
+          <!-- Baris kedua: No. KK -->
+          <div class="warga-nik q-mt-sm">No. KK: {{ w.nokk || '-' }}</div>
+          <div class="col-6 text-right warga-nik">
+            <q-btn
+              round
+              dense
+              flat
+              icon="delete"
+              color="red"
+              size="sm"
+              @click.stop="emits('hapus', w)"
+              :loading="store.loadinghapus && store.form.id === w.id"
+            />
+          </div>
         </q-card>
       </template>
     </div>
@@ -56,7 +84,7 @@ import SkeletonCard from 'src/pages/componen/SkeletonCard.vue'
 import { useWargaStore } from 'src/stores/Warga/warga'
 
 const store = useWargaStore()
-const emits = defineEmits(['add', 'edit'])
+const emits = defineEmits(['add', 'edit', 'hapus'])
 </script>
 
 <style scoped>

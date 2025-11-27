@@ -16,6 +16,7 @@
               isList = false
             }
           "
+          @hapus="hapusWarga($event)"
         />
         <FormPage v-else :data="item" @back="isList = true" />
       </div>
@@ -33,6 +34,10 @@ const store = useWargaStore()
 const isList = ref(true)
 const item = ref(null)
 
+function hapusWarga(data) {
+  store.form.id = data.id
+  store.hapus(data.id)
+}
 onMounted(() => {
   store.getlist()
 })

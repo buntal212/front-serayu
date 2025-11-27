@@ -5,7 +5,10 @@ import { notifError, notifSuccess } from 'src/modules/notifs'
 export const useWargaStore = defineStore('mwarga', {
   state: () => ({
     items: [],
+    itemsrinci: [],
     loading: false,
+    loadinghapus: false,
+    loadingrinci: false,
     dialog: false,
     params: {
       q: '',
@@ -15,6 +18,13 @@ export const useWargaStore = defineStore('mwarga', {
       nama: '',
       nokk: '',
     },
+    formrinci: {
+      id: '',
+      id_heder: '',
+      nama: '',
+      noktp: '',
+    },
+    uploadedFiles: [],
     isError: false,
   }),
   actions: {
@@ -64,6 +74,66 @@ export const useWargaStore = defineStore('mwarga', {
             reject(err)
           })
       })
+    },
+    hapus(id) {
+      this.loadinghapus = true
+      return new Promise((resolve, reject) => {
+        api
+          .post('/master/warga/hapus', { id })
+          .then(({ data }) => {
+            this.items = this.items.filter((item) => item.id !== id)
+            notifSuccess(data?.data?.message)
+            this.loadinghapus = false
+            resolve(data)
+          })
+          .catch((err) => {
+            notifError(err)
+            this.loadinghapus = false
+            reject(err)
+          })
+      })
+    },
+    async simpanrinci() {
+      this.loadingrinci = true
+      this.isError = false
+      try {
+        const formData = new FormData()
+
+        for (const key in this.formrinci) {
+          formData.append(key, this.formrinci[key])
+        }
+
+        // Tambah file dari uploader
+        // if (this.uploadedFiles.length > 0) {
+        formData.append('foto', this.uploadedFiles) // ambil file pertama
+        // }
+
+        const { data } = await api.post('/master/warga/simpanrinci', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+
+        const newData = data.data
+        if (!this.formrinci.id) {
+          this.itemsrinci.unshift(newData)
+        } else {
+          this.itemsrinci = this.itemsrinci.map((i) => (i.id === newData.id ? newData : i))
+        }
+        this.initResetrinci()
+        notifSuccess(data.message)
+      } catch (err) {
+        this.isError = true
+        notifError(err.response?.data?.message || 'Gagal menyimpan data')
+        throw err
+      } finally {
+        this.loadingrinci = false
+      }
+    },
+    initResetrinci() {
+      this.formrinci.id = ''
+      this.formrinci.id_heder = ''
+      this.formrinci.nama = ''
+      this.formrinci.noktp = ''
+      this.uploadedFiles = []
     },
     initReset() {
       this.form.id = ''

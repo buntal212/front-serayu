@@ -33,9 +33,20 @@
           dark
           :rules="[(val) => !!val || 'Wajib diisi']"
         />
+        <div class="q-mt-lg row items-center">
+          <div v-if="store.form.id">
+            <q-btn
+              label="Tambah Anggota Keluarga"
+              color="primary"
+              glossy
+              dense
+              rounded
+              @click="tambahanggota()"
+            />
+          </div>
 
-        <div class="q-mt-lg flex justify-between">
-          <q-btn label="Reset" color="grey-7" flat class="btn-reset" />
+          <q-space />
+
           <q-btn
             type="submit"
             label="Simpan"
@@ -47,20 +58,173 @@
         </div>
       </q-form>
     </q-card>
+    <q-card flat bordered class="form-card q-pa-lg q-mt-md">
+      <div class="text-h6 q-mb-md">Dokumen Anggota Keluarga</div>
+
+      <div class="row q-col-gutter-md">
+        <div v-for="(x, index) in store.itemsrinci" :key="index" class="col-6 col-sm-4 col-md-3">
+          <q-card class="img-card q-pa-sm">
+            <q-img
+              :src="x.foto"
+              ratio="1"
+              class="rounded-borders"
+              spinner-color="red"
+              spinner-size="35px"
+              @click="lihatFoto(x.foto)"
+            />
+
+            <div class="text-center q-mt-sm text-white text-subtitle2 ellipsis">
+              {{ x.nama || 'Tanpa Nama' }}
+            </div>
+
+            <div class="row justify-around q-mt-sm">
+              <q-btn
+                dense
+                flat
+                color="light-blue"
+                icon="visibility"
+                @click.stop="lihatFoto(x.foto)"
+              />
+
+              <q-btn dense flat color="red" icon="delete" @click.stop="hapus(x.id)" />
+            </div>
+          </q-card>
+        </div>
+      </div>
+
+      <!-- Dialog untuk foto besar -->
+      <q-dialog v-model="dialogFoto">
+        <q-card style="max-width: 400px">
+          <q-img :src="fotoTerpilih" ratio="1" />
+          <q-card-actions align="right">
+            <q-btn flat label="Tutup" color="red" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </q-card>
+
     <!-- </div> -->
   </q-page>
+  <q-dialog v-model="store.dialog">
+    <q-card class="form-card">
+      <q-card-section>
+        <div class="text-h6">Tambahkan Anggota Keluarga</div>
+      </q-card-section>
+
+      <q-separator />
+      <q-form @submit="simpanrinci">
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <q-input
+            v-model="store.formrinci.nama"
+            label="Nama Lengkap"
+            dense
+            filled
+            class="form-input"
+            dark
+            :rules="[(val) => !!val || 'Wajib diisi']"
+          />
+          <q-input
+            v-model="store.formrinci.noktp"
+            label="NO. KTP"
+            dense
+            filled
+            class="form-input"
+            dark
+            :rules="[(val) => !!val || 'Wajib diisi']"
+          />
+          <q-uploader
+            ref="uploaderRef"
+            style="max-width: 300px"
+            label="Masukkan KTP"
+            max-file-size="5242880"
+            accept=".jpg, .jpeg"
+            @added="onFileAdded"
+            @rejected="onRejected"
+          />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right">
+          <q-btn dense label="Cancel" color="primary" v-close-popup />
+          <q-btn dense label="Simpan" color="red" type="submit" :loading="store.loadingrinci" />
+        </q-card-actions>
+      </q-form>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
+import { useQuasar } from 'quasar'
 import { useWargaStore } from 'src/stores/Warga/warga'
+import { onMounted, ref } from 'vue'
 
 const store = useWargaStore()
-
+const props = defineProps({
+  data: {
+    type: Object,
+    default: null,
+  },
+})
+const $q = useQuasar()
 const emits = defineEmits(['back'])
+
+const uploaderRef = ref(null)
+
+const dialogFoto = ref(false)
+const fotoTerpilih = ref(null)
+
+function lihatFoto(url) {
+  fotoTerpilih.value = url
+  dialogFoto.value = true
+}
+
+function hapus(id) {
+  // jika mau emit ke parent
+  // emits('hapus', id)
+
+  // langsung pakai store
+  store.hapusrinci(id)
+}
+
 function onSubmit() {
-  console.log('store.form')
   store.simpan()
 }
+
+function simpanrinci() {
+  store.formrinci.id_heder = store.form.id
+  store.simpanrinci()
+}
+
+function tambahanggota() {
+  store.dialog = true
+}
+
+function onFileAdded(files) {
+  store.uploadedFiles = files[0]
+  console.log('files', store.uploadedFiles)
+}
+
+function onRejected() {
+  // Notify plugin needs to be installed
+  // https://v2.quasar.dev/quasar-plugins/notify#Installation
+  $q.notify({
+    type: 'negative',
+    message: `File Harus Berformat jpg atau jpeg dan Maksimal 512 Kb`,
+  })
+}
+
+onMounted(() => {
+  console.log('props', props.data)
+  if (props.data) {
+    store.form.nama = props.data?.name
+    store.form.nokk = props.data?.nokk
+    store.form.id = props.data?.id
+    store.itemsrinci = props.data?.rincian
+  } else {
+    store.initReset()
+  }
+})
 </script>
 
 <style scoped>
