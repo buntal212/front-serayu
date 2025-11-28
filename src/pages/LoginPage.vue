@@ -85,19 +85,19 @@ async function onSubmit() {
       $q.notify({ type: 'positive', message: 'Login berhasil!' })
       router.push('/')
 
-      setTimeout(() => {
-        if (window.deferredPrompt) {
-          console.log('🔥 Menampilkan prompt Install App...')
-          window.deferredPrompt.prompt()
+      // setTimeout(() => {
+      //   if (window.deferredPrompt) {
+      //     console.log('🔥 Menampilkan prompt Install App...')
+      //     window.deferredPrompt.prompt()
 
-          window.deferredPrompt.userChoice.then((choice) => {
-            console.log('User pilihan:', choice.outcome)
-            window.deferredPrompt = null
-          })
-        } else {
-          console.log('❗ A2HS belum tersedia')
-        }
-      }, 500)
+      //     window.deferredPrompt.userChoice.then((choice) => {
+      //       console.log('User pilihan:', choice.outcome)
+      //       window.deferredPrompt = null
+      //     })
+      //   } else {
+      //     console.log('❗ A2HS belum tersedia')
+      //   }
+      // }, 500)
     }
   } catch (error) {
     console.error(error)

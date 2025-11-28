@@ -58,51 +58,8 @@
         </div>
       </q-form>
     </q-card>
-    <q-card flat bordered class="form-card q-pa-lg q-mt-md">
-      <div class="text-h6 q-mb-md">Dokumen Anggota Keluarga</div>
 
-      <div class="row q-col-gutter-md">
-        <div v-for="(x, index) in store.itemsrinci" :key="index" class="col-6 col-sm-4 col-md-3">
-          <q-card class="img-card q-pa-sm">
-            <q-img
-              :src="x.foto"
-              ratio="1"
-              class="rounded-borders"
-              spinner-color="red"
-              spinner-size="35px"
-              @click="lihatFoto(x.foto)"
-            />
-
-            <div class="text-center q-mt-sm text-white text-subtitle2 ellipsis">
-              {{ x.nama || 'Tanpa Nama' }}
-            </div>
-
-            <div class="row justify-around q-mt-sm">
-              <q-btn
-                dense
-                flat
-                color="light-blue"
-                icon="visibility"
-                @click.stop="lihatFoto(x.foto)"
-              />
-
-              <q-btn dense flat color="red" icon="delete" @click.stop="hapus(x.id)" />
-            </div>
-          </q-card>
-        </div>
-      </div>
-
-      <!-- Dialog untuk foto besar -->
-      <q-dialog v-model="dialogFoto">
-        <q-card style="max-width: 400px">
-          <q-img :src="fotoTerpilih" ratio="1" />
-          <q-card-actions align="right">
-            <q-btn flat label="Tutup" color="red" v-close-popup />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </q-card>
-
+    <DaftarDokumen />
     <!-- </div> -->
   </q-page>
   <q-dialog v-model="store.dialog">
@@ -156,6 +113,7 @@
 
 <script setup>
 import { useQuasar } from 'quasar'
+import DaftarDokumen from 'src/pages/componen/DaftarDokumen.vue'
 import { useWargaStore } from 'src/stores/Warga/warga'
 import { onMounted, ref } from 'vue'
 
@@ -170,22 +128,6 @@ const $q = useQuasar()
 const emits = defineEmits(['back'])
 
 const uploaderRef = ref(null)
-
-const dialogFoto = ref(false)
-const fotoTerpilih = ref(null)
-
-function lihatFoto(url) {
-  fotoTerpilih.value = url
-  dialogFoto.value = true
-}
-
-function hapus(id) {
-  // jika mau emit ke parent
-  // emits('hapus', id)
-
-  // langsung pakai store
-  store.hapusrinci(id)
-}
 
 function onSubmit() {
   store.simpan()

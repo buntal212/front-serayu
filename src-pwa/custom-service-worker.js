@@ -11,27 +11,33 @@ import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { NetworkFirst, CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 
+self.addEventListener('fetch', (event) => {
+  // Jangan cache folder perumbi
+  if (event.request.url.includes('/perumbi/')) {
+    event.respondWith(fetch(event.request))
+    return
+  }
+})
+
 self.skipWaiting()
 clientsClaim()
 
 // ----------------------
-// FIX 1 — remove duplicates (prevent conflict)
+// FIX: Hapus duplikasi entry dari manifest
 // ----------------------
 const manifest = self.__WB_MANIFEST.filter(
   (entry, idx, arr) => arr.findIndex((e) => e.url === entry.url) === idx,
 )
 
-// FIX 2 — DO NOT add anything else manually!
-// Only let Workbox auto-inject manifest
 precacheAndRoute(manifest)
-
 cleanupOutdatedCaches()
 
 // ----------------------
-// FIX 3 — Required for SPA fallback
+// FIX: SPA fallback HARUS pakai '/index.html'
 // ----------------------
-const FALLBACK_HTML = 'index.html'
+const FALLBACK_HTML = '/index.html'
 const navigationHandler = createHandlerBoundToURL(FALLBACK_HTML)
+
 registerRoute(
   new NavigationRoute(navigationHandler, {
     denylist: [/^\/workbox-(.)*\.js$/, /^\/__/],
@@ -46,12 +52,7 @@ registerRoute(
   new NetworkFirst({
     cacheName: 'api-cache',
     networkTimeoutSeconds: 5,
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 50,
-        maxAgeSeconds: 5 * 60,
-      }),
-    ],
+    plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 5 * 60 })],
   }),
 )
 
