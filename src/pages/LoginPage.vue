@@ -40,7 +40,7 @@
 
 <script setup>
 import { useQuasar } from 'quasar'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from 'src/boot/axios'
 
@@ -106,6 +106,21 @@ async function onSubmit() {
     loading.value = false
   }
 }
+onMounted(() => {
+  setTimeout(() => {
+    if (window.deferredPrompt) {
+      console.log('🔥 Menampilkan prompt Install App...')
+      window.deferredPrompt.prompt()
+
+      window.deferredPrompt.userChoice.then((choice) => {
+        console.log('User pilihan:', choice.outcome)
+        window.deferredPrompt = null
+      })
+    } else {
+      console.log('❗ A2HS belum tersedia')
+    }
+  }, 500)
+})
 </script>
 
 <style scoped>
