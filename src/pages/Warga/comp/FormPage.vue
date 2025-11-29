@@ -59,7 +59,7 @@
       </q-form>
     </q-card>
 
-    <DaftarDokumen />
+    <DaftarDokumen @hapus="hapusrinci" />
     <!-- </div> -->
   </q-page>
   <q-dialog v-model="store.dialog">
@@ -154,6 +154,11 @@ function onRejected() {
     type: 'negative',
     message: `File Harus Berformat jpg atau jpeg dan Maksimal 512 Kb`,
   })
+}
+
+function hapusrinci(data) {
+  store.formrinci.id = data.id
+  store.hapusrinci(data)
 }
 
 onMounted(() => {

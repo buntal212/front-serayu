@@ -9,6 +9,7 @@ export const useWargaStore = defineStore('mwarga', {
     loading: false,
     loadinghapus: false,
     loadingrinci: false,
+    loadinghapusrinci: false,
     dialog: false,
     params: {
       q: '',
@@ -139,6 +140,21 @@ export const useWargaStore = defineStore('mwarga', {
       this.form.id = ''
       this.form.nama = ''
       this.form.nokk = ''
+    },
+
+    async hapusrinci(data) {
+      this.loadinghapusrinci = true
+      const params = { id: data.id, foto: data.foto, path: data.path }
+      try {
+        const { data } = await api.post('/master/warga/hapusrinci', params)
+        this.itemsrinci = this.itemsrinci.filter((item) => item.id !== data.id)
+        notifSuccess(data.message)
+      } catch (err) {
+        notifError(err.response?.data?.message || 'Gagal menghapus data')
+        throw err
+      } finally {
+        this.loadinghapusrinci = false
+      }
     },
   },
 })

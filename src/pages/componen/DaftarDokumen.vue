@@ -12,6 +12,7 @@
             spinner-color="red"
             spinner-size="35px"
             @click="lihatFoto(x.foto)"
+            :loading="store.loadinghapusrinci && store.formrinci.id === x.id"
           />
 
           <div class="text-center q-mt-sm text-black text-subtitle2 ellipsis">
@@ -21,7 +22,14 @@
           <div class="row justify-around q-mt-sm">
             <q-btn dense flat color="light-blue" icon="visibility" @click="downloadPdf(x.foto)" />
 
-            <q-btn dense flat color="red" icon="delete" @click.stop="hapus(x.id)" />
+            <q-btn
+              dense
+              flat
+              color="red"
+              icon="delete"
+              @click.stop="emits('hapus', x)"
+              :loading="store.loadinghapusrinci && store.formrinci.id === x.id"
+            />
           </div>
         </q-card>
       </div>
@@ -60,18 +68,11 @@ import { ref } from 'vue'
 const store = useWargaStore()
 const dialogFoto = ref(false)
 const fotoTerpilih = ref(null)
+const emits = defineEmits(['hapus'])
 
 function lihatFoto(url) {
   fotoTerpilih.value = url
   dialogFoto.value = true
-}
-
-function hapus(id) {
-  // jika mau emit ke parent
-  // emits('hapus', id)
-
-  // langsung pakai store
-  store.hapusrinci(id)
 }
 
 function downloadPdf(url) {
