@@ -114,11 +114,12 @@ export const useWargaStore = defineStore('mwarga', {
         })
 
         const newData = data.data
-        if (!this.formrinci.id) {
-          this.itemsrinci.unshift(newData)
-        } else {
-          this.itemsrinci = this.itemsrinci.map((i) => (i.id === newData.id ? newData : i))
-        }
+        this.itemsrinci.unshift(newData)
+        // if (!this.formrinci.id) {
+        //   console.log('asd', this.formrinci.id)
+        // } else {
+        //   this.itemsrinci = this.itemsrinci.map((i) => (i.id === newData.id ? newData : i))
+        // }
         this.initResetrinci()
         notifSuccess(data.message)
       } catch (err) {
@@ -134,7 +135,9 @@ export const useWargaStore = defineStore('mwarga', {
       this.formrinci.id_heder = ''
       this.formrinci.nama = ''
       this.formrinci.noktp = ''
+      this.formrinci.foto = ''
       this.uploadedFiles = []
+      this.resetUploaderKey++
     },
     initReset() {
       this.form.id = ''
@@ -144,11 +147,22 @@ export const useWargaStore = defineStore('mwarga', {
 
     async hapusrinci(data) {
       this.loadinghapusrinci = true
-      const params = { id: data.id, foto: data.foto, path: data.path }
+      const params = { id: data.id, id_heder: data.id_heder, foto: data.foto, path: data.path }
+
       try {
-        const { data } = await api.post('/master/warga/hapusrinci', params)
+        const { data: resp } = await api.post('/master/warga/hapusrinci', params)
+        // Cari item dulu SEBELUM dihapus
+        const item = this.items.find((i) => i.id === Number(data.id_heder))
+
+        // Update rincian jika masih ada item-nya
+        if (item && resp.data?.rincian) {
+          item.rincian = resp.data.rincian
+        }
+
+        // Hapus item dari array
+        // this.items = this.items.filter((x) => x.id !== data.id)
         this.itemsrinci = this.itemsrinci.filter((item) => item.id !== data.id)
-        notifSuccess(data.message)
+        notifSuccess(resp.message)
       } catch (err) {
         notifError(err.response?.data?.message || 'Gagal menghapus data')
         throw err

@@ -91,6 +91,7 @@
           />
           <q-uploader
             ref="uploaderRef"
+            :key="store.resetUploaderKey"
             style="max-width: 300px"
             label="Masukkan KTP"
             max-file-size="5242880"
@@ -115,7 +116,7 @@
 import { useQuasar } from 'quasar'
 import DaftarDokumen from 'src/pages/componen/DaftarDokumen.vue'
 import { useWargaStore } from 'src/stores/Warga/warga'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const store = useWargaStore()
 const props = defineProps({
@@ -161,8 +162,16 @@ function hapusrinci(data) {
   store.hapusrinci(data)
 }
 
+watch(
+  () => store.resetUploaderKey,
+  () => {
+    if (uploaderRef.value) {
+      uploaderRef.value.reset() // ⬅️ Pemanggilan resmi RESET
+    }
+  },
+)
+
 onMounted(() => {
-  console.log('props', props.data)
   if (props.data) {
     store.form.nama = props.data?.name
     store.form.nokk = props.data?.nokk

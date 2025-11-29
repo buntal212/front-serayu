@@ -12,7 +12,6 @@
             spinner-color="red"
             spinner-size="35px"
             @click="lihatFoto(x.foto)"
-            :loading="store.loadinghapusrinci && store.formrinci.id === x.id"
           />
 
           <div class="text-center q-mt-sm text-black text-subtitle2 ellipsis">
