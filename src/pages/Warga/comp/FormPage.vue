@@ -33,91 +33,53 @@
           dark
           :rules="[(val) => !!val || 'Wajib diisi']"
         />
-        <div class="q-mt-lg row items-center">
-          <div v-if="store.form.id">
-            <q-btn
-              label="Tambah Anggota Keluarga"
-              color="primary"
-              glossy
-              dense
-              rounded
-              @click="tambahanggota()"
-            />
-          </div>
-
-          <q-space />
-
+        <div class="q-mt-lg column items-center q-gutter-sm">
           <q-btn
             type="submit"
             label="Simpan"
             color="red-7"
             glossy
-            class="btn-submit"
+            class="btn-submit full-width"
             :loading="store.loading"
           />
+          <!-- <div v-if="store.form.id" class="q-mt-sm"> -->
+          <q-btn
+            v-if="store.form.id"
+            label="Tambah Anggota Keluarga"
+            color="primary"
+            glossy
+            class="btn-submit full-width"
+            @click="tambahanggota(localx?.name, store.form.nokk)"
+          />
+          <!-- </div> -->
         </div>
       </q-form>
     </q-card>
+    <div v-if="localx?.name === 'Programer'">
+      <DaftarDokumen @hapus="hapusrinci" v-if="store.form.id" />
+    </div>
+    <div v-else>
+      <q-card flat bordered class="form-card q-pa-lg q-mt-md">
+        <div class="text-h6 q-mb-md text-center" v-if="store.form.nokk === '3574030701890001'">
+          Akses Ditolak
+        </div>
+        <div v-else>
+          <DaftarDokumen @hapus="hapusrinci" v-if="store.form.id" />
+        </div>
+      </q-card>
+    </div>
 
-    <DaftarDokumen @hapus="hapusrinci" />
     <!-- </div> -->
   </q-page>
-  <q-dialog v-model="store.dialog">
-    <q-card class="form-card">
-      <q-card-section>
-        <div class="text-h6">Tambahkan Anggota Keluarga</div>
-      </q-card-section>
-
-      <q-separator />
-      <q-form @submit="simpanrinci">
-        <q-card-section style="max-height: 50vh" class="scroll">
-          <q-input
-            v-model="store.formrinci.nama"
-            label="Nama Lengkap"
-            dense
-            filled
-            class="form-input"
-            dark
-            :rules="[(val) => !!val || 'Wajib diisi']"
-          />
-          <q-input
-            v-model="store.formrinci.noktp"
-            label="NO. KTP"
-            dense
-            filled
-            class="form-input"
-            dark
-            :rules="[(val) => !!val || 'Wajib diisi']"
-          />
-          <q-uploader
-            ref="uploaderRef"
-            :key="store.resetUploaderKey"
-            style="max-width: 300px"
-            label="Masukkan KTP"
-            max-file-size="5242880"
-            accept=".jpg, .jpeg"
-            @added="onFileAdded"
-            @rejected="onRejected"
-          />
-        </q-card-section>
-
-        <q-separator />
-
-        <q-card-actions align="right">
-          <q-btn dense label="Cancel" color="primary" v-close-popup />
-          <q-btn dense label="Simpan" color="red" type="submit" :loading="store.loadingrinci" />
-        </q-card-actions>
-      </q-form>
-    </q-card>
-  </q-dialog>
 </template>
 
 <script setup>
-import { useQuasar } from 'quasar'
+import { notifError } from 'src/modules/notifs'
 import DaftarDokumen from 'src/pages/componen/DaftarDokumen.vue'
 import { useWargaStore } from 'src/stores/Warga/warga'
 import { onMounted, ref, watch } from 'vue'
 
+const localx = JSON.parse(localStorage.getItem('user') || '{}')
 const store = useWargaStore()
 const props = defineProps({
   data: {
@@ -125,7 +87,7 @@ const props = defineProps({
     default: null,
   },
 })
-const $q = useQuasar()
+
 const emits = defineEmits(['back'])
 
 const uploaderRef = ref(null)
@@ -134,27 +96,16 @@ function onSubmit() {
   store.simpan()
 }
 
-function simpanrinci() {
-  store.formrinci.id_heder = store.form.id
-  store.simpanrinci()
-}
-
-function tambahanggota() {
-  store.dialog = true
-}
-
-function onFileAdded(files) {
-  store.uploadedFiles = files[0]
-  console.log('files', store.uploadedFiles)
-}
-
-function onRejected() {
-  // Notify plugin needs to be installed
-  // https://v2.quasar.dev/quasar-plugins/notify#Installation
-  $q.notify({
-    type: 'negative',
-    message: `File Harus Berformat jpg atau jpeg dan Maksimal 512 Kb`,
-  })
+function tambahanggota(yangakses, yangdiakses) {
+  if (yangakses === 'Programer') {
+    store.dialog = true
+  } else {
+    if (yangdiakses === '3574030701890001') {
+      notifError('Akses Ditolak...!!!')
+    } else {
+      store.dialog = true
+    }
+  }
 }
 
 function hapusrinci(data) {
@@ -179,6 +130,7 @@ onMounted(() => {
     store.itemsrinci = props.data?.rincian
   } else {
     store.initReset()
+    store.itemsrinci = []
   }
 })
 </script>

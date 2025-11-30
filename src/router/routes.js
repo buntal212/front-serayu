@@ -18,6 +18,10 @@ const routes = [
         component: () => import('pages/Laporankas/IndexPage.vue'),
       },
       {
+        path: '/hakakses',
+        component: () => import('pages/Hakakses/IndexPage.vue'),
+      },
+      {
         path: 'logout',
         component: () => import('src/pages/LogoutPage.vue'),
       },
@@ -27,7 +31,11 @@ const routes = [
   {
     path: '/login',
     component: () => import('layouts/LoginLayout.vue'),
-    children: [{ path: '', component: () => import('pages/LoginPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/LoginPage.vue') },
+      { path: '/register', component: () => import('pages/RegisterPage.vue') },
+      { path: '/formwarga', component: () => import('pages/FormWarga.vue') },
+    ],
   },
 
   // Always leave this as last one,

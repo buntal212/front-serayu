@@ -17,6 +17,7 @@ onMounted(() => {
   localStorage.removeItem('token')
   localStorage.removeItem('user')
   localStorage.removeItem('menus')
+  localStorage.removeItem('rincian')
   sessionStorage.clear()
 
   // Tampilkan notifikasi

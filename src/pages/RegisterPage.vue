@@ -11,15 +11,11 @@
         <h2>Perum <br />Bengawan Indah</h2>
 
         <div class="inputBx">
-          <input v-model="username" type="text" placeholder="Username" />
+          <input v-model="nokk" type="text" placeholder="Masukkan No KK" />
         </div>
-        <div class="inputBx">
-          <input v-model="pass" type="password" placeholder="Password" />
-        </div>
-
         <div class="inputBx">
           <q-btn
-            label="Sign In"
+            label="Cari"
             type="submit"
             color="primary"
             glossy
@@ -29,17 +25,6 @@
             :disable="loading"
           />
         </div>
-        <div class="inputBx">
-          <q-btn
-            label="Register"
-            color="red"
-            glossy
-            rounded
-            class="full-width"
-            @click="register()"
-          />
-        </div>
-
         <div class="links text-white">
           Selamat Datang Di Sistem Informasi Perumahan Bengawan Indah
         </div>
@@ -50,18 +35,17 @@
 
 <script setup>
 import { useQuasar } from 'quasar'
+import { api } from 'src/boot/axios'
+import { useWargaStore } from 'src/stores/Warga/warga'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from 'src/boot/axios'
-
-const username = ref('')
-const pass = ref('')
-const loading = ref(false)
 
 const $q = useQuasar()
+const drops = 20
+const loading = ref(false)
+const nokk = ref('')
 const router = useRouter()
-const drops = 20 // jumlah tetesan hujan
-
+const store = useWargaStore()
 // eslint-disable-next-line no-unused-vars
 function dropStyle(n) {
   const left = Math.random() * 100 + '%'
@@ -78,37 +62,20 @@ async function onSubmit() {
   loading.value = true
 
   try {
-    if (username.value === '' || pass.value === '') {
-      $q.notify({ type: 'negative', message: 'Username dan password tidak boleh kosong' })
+    if (nokk.value === '') {
+      $q.notify({ type: 'negative', message: 'No KK tidak boleh kosong' })
       return
     } else {
-      const response = await api.post('/login', {
-        username: username.value,
-        password: pass.value,
+      const respon = await api.post('/caridatawarga', {
+        nokk: nokk.value,
       })
-
-      const token = response.data.token
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
-      localStorage.setItem('rincian', JSON.stringify(response.data.rincian))
-      localStorage.setItem('menus', JSON.stringify(response.data.menu))
-
-      $q.notify({ type: 'positive', message: 'Login berhasil!' })
-      router.push('/')
-
-      setTimeout(() => {
-        if (window.deferredPrompt) {
-          console.log('🔥 Menampilkan prompt Install App...')
-          window.deferredPrompt.prompt()
-
-          window.deferredPrompt.userChoice.then((choice) => {
-            console.log('User pilihan:', choice.outcome)
-            window.deferredPrompt = null
-          })
-        } else {
-          console.log('❗ A2HS belum tersedia')
-        }
-      }, 100)
+      // console.log(respon.data.data)
+      if (respon.data.data.status === false) {
+        $q.notify({ type: 'negative', message: respon.data.data.message })
+      } else {
+        store.formregister.nokk = nokk.value
+        router.push('/formwarga')
+      }
     }
   } catch (error) {
     console.error(error)
@@ -117,25 +84,6 @@ async function onSubmit() {
     loading.value = false
   }
 }
-
-function register() {
-  router.push('/register')
-}
-// onMounted(() => {
-//   setTimeout(() => {
-//     if (window.deferredPrompt) {
-//       console.log('🔥 Menampilkan prompt Install App...')
-//       window.deferredPrompt.prompt()
-
-//       window.deferredPrompt.userChoice.then((choice) => {
-//         console.log('User pilihan:', choice.outcome)
-//         window.deferredPrompt = null
-//       })
-//     } else {
-//       console.log('❗ A2HS belum tersedia')
-//     }
-//   }, 500)
-// })
 </script>
 
 <style scoped>

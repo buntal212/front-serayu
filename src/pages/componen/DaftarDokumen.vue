@@ -59,16 +59,65 @@
       </q-card>
     </q-dialog>
   </q-card>
+  <q-dialog v-model="store.dialog">
+    <q-card class="form-card">
+      <q-card-section>
+        <div class="text-h6">Tambahkan Anggota Keluarga</div>
+      </q-card-section>
+
+      <q-separator />
+      <q-form @submit="simpanrinci">
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <q-input
+            v-model="store.formrinci.nama"
+            label="Nama Lengkap"
+            dense
+            filled
+            class="form-input"
+            dark
+            :rules="[(val) => !!val || 'Wajib diisi']"
+          />
+          <q-input
+            v-model="store.formrinci.noktp"
+            label="NO. KTP"
+            dense
+            filled
+            class="form-input"
+            dark
+            :rules="[(val) => !!val || 'Wajib diisi']"
+          />
+          <q-uploader
+            ref="uploaderRef"
+            :key="store.resetUploaderKey"
+            style="max-width: 300px"
+            label="Masukkan KTP"
+            max-file-size="5242880"
+            accept=".jpg, .jpeg"
+            @added="onFileAdded"
+            @rejected="onRejected"
+          />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right">
+          <q-btn dense label="Cancel" color="primary" v-close-popup />
+          <q-btn dense label="Simpan" color="red" type="submit" :loading="store.loadingrinci" />
+        </q-card-actions>
+      </q-form>
+    </q-card>
+  </q-dialog>
 </template>
 <script setup>
 import { useWargaStore } from 'src/stores/Warga/warga'
 import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
 const store = useWargaStore()
 const dialogFoto = ref(false)
 const fotoTerpilih = ref(null)
 const emits = defineEmits(['hapus'])
-
+const $q = useQuasar()
 function lihatFoto(url) {
   fotoTerpilih.value = url
   dialogFoto.value = true
@@ -77,4 +126,32 @@ function lihatFoto(url) {
 function downloadPdf(url) {
   window.open(url, '_blank')
 }
+
+function simpanrinci() {
+  store.formrinci.id_heder = store.form.id
+  store.simpanrinci()
+}
+
+function onFileAdded(files) {
+  store.uploadedFiles = files[0]
+  console.log('files', store.uploadedFiles)
+}
+
+function onRejected() {
+  // Notify plugin needs to be installed
+  // https://v2.quasar.dev/quasar-plugins/notify#Installation
+  $q.notify({
+    type: 'negative',
+    message: `File Harus Berformat jpg atau jpeg dan Maksimal 512 Kb`,
+  })
+}
 </script>
+<style scoped>
+.form-card {
+  border-radius: 20px;
+  background: rgba(30, 30, 30, 0.55);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 22px rgba(0, 0, 0, 0.8);
+  color: #fff;
+}
+</style>

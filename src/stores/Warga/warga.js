@@ -10,6 +10,7 @@ export const useWargaStore = defineStore('mwarga', {
     loadinghapus: false,
     loadingrinci: false,
     loadinghapusrinci: false,
+    loadingregister: false,
     dialog: false,
     params: {
       q: '',
@@ -24,6 +25,12 @@ export const useWargaStore = defineStore('mwarga', {
       id_heder: '',
       nama: '',
       noktp: '',
+    },
+    formregister: {
+      nokk: '',
+      username: '',
+      password: '',
+      confirmpassword: '',
     },
     uploadedFiles: [],
     isError: false,
@@ -169,6 +176,29 @@ export const useWargaStore = defineStore('mwarga', {
       } finally {
         this.loadinghapusrinci = false
       }
+    },
+    async simpanregister(router) {
+      this.loadingregister = true
+      this.isError = false
+      try {
+        const { data } = await api.post('/register', this.formregister)
+        // console.log(data?.data)
+        notifSuccess(data.message)
+        this.initresetregister()
+        router.push('/login')
+      } catch (err) {
+        this.isError = true
+        notifError(err.response?.data?.message || 'Gagal menyimpan data')
+        throw err
+      } finally {
+        this.loadingregister = false
+      }
+    },
+    initresetregister() {
+      this.formregister.nokk = ''
+      this.formregister.username = ''
+      this.formregister.password = ''
+      this.formregister.confirmpassword = ''
     },
   },
 })

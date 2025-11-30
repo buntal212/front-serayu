@@ -11,35 +11,31 @@
         <h2>Perum <br />Bengawan Indah</h2>
 
         <div class="inputBx">
-          <input v-model="username" type="text" placeholder="Username" />
+          <input v-model="store.formregister.username" type="text" placeholder="Username" />
         </div>
         <div class="inputBx">
-          <input v-model="pass" type="password" placeholder="Password" />
+          <input v-model="store.formregister.password" type="password" placeholder="Password" />
+        </div>
+        <div class="inputBx">
+          <input
+            v-model="store.formregister.confirmpassword"
+            type="password"
+            placeholder="Masukkan Ulang Password"
+          />
         </div>
 
         <div class="inputBx">
           <q-btn
-            label="Sign In"
+            label="Register"
             type="submit"
             color="primary"
             glossy
             rounded
             class="full-width"
-            :loading="loading"
-            :disable="loading"
+            :loading="store.loadingregister"
+            :disable="store.loadingregister"
           />
         </div>
-        <div class="inputBx">
-          <q-btn
-            label="Register"
-            color="red"
-            glossy
-            rounded
-            class="full-width"
-            @click="register()"
-          />
-        </div>
-
         <div class="links text-white">
           Selamat Datang Di Sistem Informasi Perumahan Bengawan Indah
         </div>
@@ -50,16 +46,14 @@
 
 <script setup>
 import { useQuasar } from 'quasar'
-import { ref } from 'vue'
+
+import { useWargaStore } from 'src/stores/Warga/warga'
 import { useRouter } from 'vue-router'
-import { api } from 'src/boot/axios'
 
-const username = ref('')
-const pass = ref('')
-const loading = ref(false)
-
-const $q = useQuasar()
+const store = useWargaStore()
 const router = useRouter()
+const $q = useQuasar()
+
 const drops = 20 // jumlah tetesan hujan
 
 // eslint-disable-next-line no-unused-vars
@@ -75,67 +69,21 @@ function dropStyle(n) {
 }
 
 async function onSubmit() {
-  loading.value = true
-
-  try {
-    if (username.value === '' || pass.value === '') {
-      $q.notify({ type: 'negative', message: 'Username dan password tidak boleh kosong' })
-      return
-    } else {
-      const response = await api.post('/login', {
-        username: username.value,
-        password: pass.value,
-      })
-
-      const token = response.data.token
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
-      localStorage.setItem('rincian', JSON.stringify(response.data.rincian))
-      localStorage.setItem('menus', JSON.stringify(response.data.menu))
-
-      $q.notify({ type: 'positive', message: 'Login berhasil!' })
-      router.push('/')
-
-      setTimeout(() => {
-        if (window.deferredPrompt) {
-          console.log('🔥 Menampilkan prompt Install App...')
-          window.deferredPrompt.prompt()
-
-          window.deferredPrompt.userChoice.then((choice) => {
-            console.log('User pilihan:', choice.outcome)
-            window.deferredPrompt = null
-          })
-        } else {
-          console.log('❗ A2HS belum tersedia')
-        }
-      }, 100)
-    }
-  } catch (error) {
-    console.error(error)
-    $q.notify({ type: 'negative', message: 'Username atau password salah' })
-  } finally {
-    loading.value = false
+  if (
+    store.formregister.nokk === '' ||
+    store.formregister.username === '' ||
+    store.formregister.password === '' ||
+    store.formregister.confirmpassword === ''
+  ) {
+    $q.notify({ type: 'negative', message: 'Username dan password tidak boleh kosong' })
+    return
+  } else if (store.formregister.password !== store.formregister.confirmpassword) {
+    $q.notify({ type: 'negative', message: 'Password tidak sama' })
+    return
+  } else {
+    store.simpanregister(router)
   }
 }
-
-function register() {
-  router.push('/register')
-}
-// onMounted(() => {
-//   setTimeout(() => {
-//     if (window.deferredPrompt) {
-//       console.log('🔥 Menampilkan prompt Install App...')
-//       window.deferredPrompt.prompt()
-
-//       window.deferredPrompt.userChoice.then((choice) => {
-//         console.log('User pilihan:', choice.outcome)
-//         window.deferredPrompt = null
-//       })
-//     } else {
-//       console.log('❗ A2HS belum tersedia')
-//     }
-//   }, 500)
-// })
 </script>
 
 <style scoped>

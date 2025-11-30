@@ -25,9 +25,14 @@ clientsClaim()
 // ----------------------
 // FIX: Hapus duplikasi entry dari manifest
 // ----------------------
-const manifest = self.__WB_MANIFEST.filter(
+let manifest = self.__WB_MANIFEST.filter(
   (entry, idx, arr) => arr.findIndex((e) => e.url === entry.url) === idx,
 )
+
+// Tambahkan index.html secara paksa jika belum ada
+if (!manifest.find((e) => e.url === 'index.html')) {
+  manifest.push({ url: 'index.html', revision: null })
+}
 
 precacheAndRoute(manifest)
 cleanupOutdatedCaches()
@@ -35,8 +40,13 @@ cleanupOutdatedCaches()
 // ----------------------
 // FIX: SPA fallback HARUS pakai '/index.html'
 // ----------------------
-const FALLBACK_HTML = '/index.html'
-const navigationHandler = createHandlerBoundToURL(FALLBACK_HTML)
+const navigationHandler = createHandlerBoundToURL('index.html')
+
+registerRoute(
+  new NavigationRoute(navigationHandler, {
+    denylist: [/^\/workbox-(.)*\.js$/, /^\/__/],
+  }),
+)
 
 registerRoute(
   new NavigationRoute(navigationHandler, {
