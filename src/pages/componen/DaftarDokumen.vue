@@ -118,6 +118,7 @@ const dialogFoto = ref(false)
 const fotoTerpilih = ref(null)
 const emits = defineEmits(['hapus'])
 const $q = useQuasar()
+const props = defineProps({ id_heder: { type: String, default: '' } })
 function lihatFoto(url) {
   fotoTerpilih.value = url
   dialogFoto.value = true
@@ -128,7 +129,7 @@ function downloadPdf(url) {
 }
 
 function simpanrinci() {
-  store.formrinci.id_heder = store.form.id
+  store.formrinci.id_heder = props.id_heder
   store.simpanrinci()
 }
 

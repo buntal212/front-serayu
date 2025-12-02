@@ -23,7 +23,6 @@
           dark
           :rules="[(val) => !!val || 'Wajib diisi']"
         />
-
         <q-input
           v-model="store.form.nokk"
           label="NO. KK"
@@ -56,7 +55,7 @@
       </q-form>
     </q-card>
     <div v-if="localx?.name === 'Programer'">
-      <DaftarDokumen @hapus="hapusrinci" v-if="store.form.id" />
+      <DaftarDokumen @hapus="hapusrinci" :id_heder="store.form.id" />
     </div>
     <div v-else>
       <q-card flat bordered class="form-card q-pa-lg q-mt-md">
@@ -64,7 +63,7 @@
           Akses Ditolak
         </div>
         <div v-else>
-          <DaftarDokumen @hapus="hapusrinci" v-if="store.form.id" />
+          <DaftarDokumen @hapus="hapusrinci" :id_heder="store.form.id" />
         </div>
       </q-card>
     </div>
@@ -97,6 +96,7 @@ function onSubmit() {
 }
 
 function tambahanggota(yangakses, yangdiakses) {
+  // store.formrinci.id_heder = ''
   if (yangakses === 'Programer') {
     store.dialog = true
   } else {

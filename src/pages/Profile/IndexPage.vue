@@ -75,55 +75,7 @@
         </q-card>
       </div>
     </div>
-    <DaftarDokumen />
-    <!-- <q-dialog v-model="store.dialog">
-      <q-card class="form-card">
-        <q-card-section>
-          <div class="text-h6">Tambahkan Anggota Keluarga</div>
-        </q-card-section>
-
-        <q-separator />
-        <q-form @submit="simpanrinci">
-          <q-card-section style="max-height: 50vh" class="scroll">
-            <q-input
-              v-model="store.formrinci.nama"
-              label="Nama Lengkap"
-              dense
-              filled
-              class="form-input"
-              dark
-              :rules="[(val) => !!val || 'Wajib diisi']"
-            />
-            <q-input
-              v-model="store.formrinci.noktp"
-              label="NO. KTP"
-              dense
-              filled
-              class="form-input"
-              dark
-              :rules="[(val) => !!val || 'Wajib diisi']"
-            />
-            <q-uploader
-              ref="uploaderRef"
-              :key="store.resetUploaderKey"
-              style="max-width: 300px"
-              label="Masukkan KTP"
-              max-file-size="5242880"
-              accept=".jpg, .jpeg"
-              @added="onFileAdded"
-              @rejected="onRejected"
-            />
-          </q-card-section>
-
-          <q-separator />
-
-          <q-card-actions align="right">
-            <q-btn dense label="Cancel" color="primary" v-close-popup />
-            <q-btn dense label="Simpan" color="red" type="submit" :loading="store.loadingrinci" />
-          </q-card-actions>
-        </q-form>
-      </q-card>
-    </q-dialog> -->
+    <DaftarDokumen :id_heder="user.id" />
   </q-page>
 </template>
 
@@ -148,6 +100,7 @@ function logout() {
 }
 
 function tambahanggota() {
+  // store.formrinci.id_heder = id_heder
   store.dialog = true
 }
 
