@@ -75,7 +75,7 @@
         </q-card>
       </div>
     </div>
-    <DaftarDokumen :id_heder="user.id" />
+    <DaftarDokumen :id_heder="user.id" @hapus="hapusrinci" />
   </q-page>
 </template>
 
@@ -104,12 +104,17 @@ function tambahanggota() {
   store.dialog = true
 }
 
+function hapusrinci(data) {
+  const x = 'profile'
+  store.formrinci.id = data.id
+  store.hapusrinci(data, x)
+}
+
 const defaultAvatar =
   'https://i0.wp.com/www.rukita.co/stories/wp-content/uploads/2022/04/3b0440d25a78d581953ddc0a1237615e.webp?w=600&ssl=1'
 
 onMounted(() => {
-  const rinciandokumen = localStorage.getItem('rincian') || '[]'
-  store.itemsrinci = JSON.parse(rinciandokumen)
+  store.itemsrinci = JSON.parse(localStorage.getItem('rincian') || '[]')
 })
 </script>
 

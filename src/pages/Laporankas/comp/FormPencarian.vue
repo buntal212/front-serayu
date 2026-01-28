@@ -59,9 +59,12 @@ const props = defineProps({
 const tahunOptions = [store.params.tahun - 1, store.params.tahun, store.params.tahun + 1]
 
 onMounted(() => {
-  const stringdulu = store.params.bulan.toString()
+  const stringdulu = String(store.params.bulan).padStart(2, '0')
+  // console.log('bulan', stringdulu)
+  // console.log('sasaasasasasasa', props.bulan)
   const sasa = props.bulan?.find((v) => v.kode === stringdulu)
-  store.params.bulan = sasa.kode
+  // console.log('sasa', sasa)
+  store.params.bulan = sasa?.kode
   store.setParams()
 })
 </script>

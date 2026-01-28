@@ -12,6 +12,7 @@ export const useWargaStore = defineStore('mwarga', {
     loadinghapusrinci: false,
     loadingregister: false,
     dialog: false,
+    resetUploaderKey: 0,
     params: {
       q: '',
     },
@@ -122,6 +123,7 @@ export const useWargaStore = defineStore('mwarga', {
 
         const newData = data.data
         this.itemsrinci.unshift(newData)
+        localStorage.setItem('rincian', JSON.stringify(this.itemsrinci))
         // if (!this.formrinci.id) {
         //   console.log('asd', this.formrinci.id)
         // } else {
@@ -152,23 +154,20 @@ export const useWargaStore = defineStore('mwarga', {
       this.form.nokk = ''
     },
 
-    async hapusrinci(data) {
+    async hapusrinci(data, x) {
+      console.log('hapus rinci', data, x)
       this.loadinghapusrinci = true
       const params = { id: data.id, id_heder: data.id_heder, foto: data.foto, path: data.path }
 
       try {
         const { data: resp } = await api.post('/master/warga/hapusrinci', params)
         // Cari item dulu SEBELUM dihapus
-        const item = this.items.find((i) => i.id === Number(data.id_heder))
+        const item = resp.data?.rincian
 
-        // Update rincian jika masih ada item-nya
-        if (item && resp.data?.rincian) {
-          item.rincian = resp.data.rincian
-        }
+        localStorage.setItem('rincian', JSON.stringify(item))
+        this.itemsrinci = item
+        console.log('rincianx', data)
 
-        // Hapus item dari array
-        // this.items = this.items.filter((x) => x.id !== data.id)
-        this.itemsrinci = this.itemsrinci.filter((item) => item.id !== data.id)
         notifSuccess(resp.message)
       } catch (err) {
         notifError(err.response?.data?.message || 'Gagal menghapus data')

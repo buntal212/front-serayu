@@ -186,6 +186,7 @@ function onSubmit() {
 onMounted(() => {
   store.initReset()
   const stringdulu = store.form.bulan.toString()
+
   const sasa = props.bulan?.find((v) => v.kode === stringdulu)
   store.form.bulan = sasa.kode
 })

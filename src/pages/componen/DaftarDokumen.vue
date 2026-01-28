@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered class="form-card q-pa-lg q-mt-md">
     <div class="text-h6 q-mb-md">Dokumen Anggota Keluarga</div>
-
+    <!-- <pre>{{ store.itemsrinci }}</pre> -->
     <div class="row q-col-gutter-md">
       <div v-for="(x, index) in store.itemsrinci" :key="index" class="col-6 col-sm-4 col-md-3">
         <q-card class="img-card q-pa-sm">
@@ -118,7 +118,8 @@ const dialogFoto = ref(false)
 const fotoTerpilih = ref(null)
 const emits = defineEmits(['hapus'])
 const $q = useQuasar()
-const props = defineProps({ id_heder: { type: String, default: '' } })
+const props = defineProps({ id_heder: { type: Number, default: null } })
+
 function lihatFoto(url) {
   fotoTerpilih.value = url
   dialogFoto.value = true
