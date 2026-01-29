@@ -85,11 +85,11 @@ import SkeletonCard from 'src/pages/componen/SkeletonCard.vue'
 import { useWargaStore } from 'src/stores/Warga/warga'
 
 const store = useWargaStore()
-const emits = defineEmits(['add', 'hapus'])
+const emits = defineEmits(['add', 'edit', 'hapus'])
 
 function editx(data) {
   const user = JSON.parse(localStorage.getItem('user') || '{}')
-  console.log(user.nik)
+  // console.log(user.nik)
   if (data.nokk === '3574030506061835' || data.nokk === 3574030506061835) {
     if (user.nik != '11111' || user.nik != 11111) {
       notifError('ANDA TIDAK PUNYA AKSES UNTUK MELIHAT DATA INI...!!!')

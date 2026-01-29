@@ -55,7 +55,7 @@
       </q-form>
     </q-card>
     <div v-if="localx?.name === 'Programer'">
-      <DaftarDokumen @hapus="hapusrinci" :id_heder="store.form.id" />
+      <DaftarDokumen @hapus="hapusrinci" :id_heder="Number(store.form.id)" />
     </div>
     <div v-else>
       <q-card flat bordered class="form-card q-pa-lg q-mt-md">

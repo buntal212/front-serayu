@@ -75,7 +75,7 @@
         </q-card>
       </div>
     </div>
-    <DaftarDokumen :id_heder="user.id" @hapus="hapusrinci" />
+    <DaftarDokumen :id_heder="Number(user.id)" @hapus="hapusrinci" />
   </q-page>
 </template>
 
