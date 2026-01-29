@@ -46,13 +46,13 @@
           flat
           bordered
           class="warga-card q-pa-md"
-          @click="emits('edit', w)"
+          @click="editx(w)"
         >
           <!-- ROW: Nama + Button Delete -->
           <div class="row items-center justify-between">
             <div class="warga-name">
               {{
-                w.nokk === '3574030701890001' || w.nokk === 3574030701890001
+                w.nokk === '3574030506061835' || w.nokk === 3574030506061835
                   ? 'Mas ' + w.name
                   : 'Bpk. ' + w.name
               }}
@@ -80,11 +80,26 @@
 </template>
 
 <script setup>
+import { notifError } from 'src/modules/notifs'
 import SkeletonCard from 'src/pages/componen/SkeletonCard.vue'
 import { useWargaStore } from 'src/stores/Warga/warga'
 
 const store = useWargaStore()
-const emits = defineEmits(['add', 'edit', 'hapus'])
+const emits = defineEmits(['add', 'hapus'])
+
+function editx(data) {
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  console.log(user.nik)
+  if (data.nokk === '3574030506061835' || data.nokk === 3574030506061835) {
+    if (user.nik != '11111' || user.nik != 11111) {
+      notifError('ANDA TIDAK PUNYA AKSES UNTUK MELIHAT DATA INI...!!!')
+    } else {
+      emits('edit', data)
+    }
+  } else {
+    emits('edit', data)
+  }
+}
 </script>
 
 <style scoped>

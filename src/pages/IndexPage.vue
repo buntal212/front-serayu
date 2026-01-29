@@ -11,7 +11,7 @@
         </div>
         <div class="profile-info">
           <div class="text-h6">{{ user.name }}</div>
-          <div class="text-subtitle2">{{ user.email }}</div>
+          <div class="text-subtitle2">{{ user.nokk }}</div>
         </div>
       </div>
     </q-card>

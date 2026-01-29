@@ -14,7 +14,7 @@
               {{ user.name }}
             </div>
             <div class="text-grey-5 text-subtitle2">
-              {{ user.email }}
+              {{ user.nokk ?? '-' }}
             </div>
           </div>
 
