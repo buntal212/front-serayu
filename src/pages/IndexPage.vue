@@ -42,6 +42,18 @@
       </q-card-section>
     </q-card>
 
+    <!-- Waktu Shalat -->
+    <q-card flat bordered class="shalat-card q-pa-md q-mb-md">
+      <div class="text-h6 text-white text-center q-mb-sm">Jadwal Shalat Hari Ini</div>
+
+      <div class="shalat-grid">
+        <div v-for="(waktu, nama) in storecuaca.items" :key="nama" class="shalat-item">
+          <div class="shalat-nama">{{ nama }}</div>
+          <div class="shalat-waktu">{{ waktu }}</div>
+        </div>
+      </div>
+    </q-card>
+
     <!-- Cuaca Card -->
     <q-card flat bordered class="cuaca-card q-pa-md">
       <div v-for="(group, tanggal) in groupedCuaca" :key="tanggal" class="q-mb-xl">
@@ -114,6 +126,7 @@ onMounted(async () => {
 
   // Ambil data cuaca
   await storecuaca.getCuaca()
+  storecuaca.jadwatshalat()
   pageLoading.value = false
 })
 
@@ -128,99 +141,157 @@ const groupedCuaca = computed(() =>
 
 <style scoped>
 .dashboard-bg {
-  background: linear-gradient(160deg, #0f0f0f, #1a1a1a, #111827);
+  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
   min-height: 100vh;
   padding: 16px;
 }
-.profile-card {
+
+/* ===============================
+   CARD GLOBAL STYLE
+================================ */
+.profile-card,
+.menu-container,
+.shalat-card,
+.cuaca-card {
   border-radius: 20px;
-  overflow: visible;
-  position: relative;
-  height: 180px;
-  background: rgba(30, 30, 30, 0.6);
-  backdrop-filter: blur(15px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9);
+  background: linear-gradient(145deg, #0f172a, #020617);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 12px 30px rgba(0, 0, 0, 0.7);
 }
+
+/* ===============================
+   PROFILE
+================================ */
+.profile-card {
+  margin-bottom: 16px;
+}
+
 .profile-bg {
-  background: linear-gradient(135deg, #1e1e2f, #2c2c3e);
-  padding: 24px 16px 16px;
+  padding: 24px 16px 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
+
 .profile-info div {
-  color: #e0e0e0;
+  color: #e5e7eb;
 }
+
+/* ===============================
+   MENU
+================================ */
 .menu-container {
-  border-radius: 20px;
-  background: rgba(30, 30, 30, 0.6);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+  margin-bottom: 20px;
 }
+
 .menu-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 16px;
 }
+
 .menu-card {
   width: 120px;
   height: 120px;
   border-radius: 16px;
+  /* background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
+  ) !important; */
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  transition: all 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .menu-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.9);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.85);
 }
-.menu-card .text-white {
-  color: #f0f0f0;
-}
+
 .menu-label {
-  color: #f0f0f0;
+  color: #f8fafc;
   font-weight: 600;
 }
-.cuaca-card {
-  border-radius: 20px;
-  background: rgba(30, 30, 30, 0.5);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+
+/* ===============================
+   SHALAT
+================================ */
+.shalat-card {
+  margin-bottom: 20px;
 }
+
+.shalat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.shalat-item {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shalat-nama {
+  font-size: 13px;
+  color: #c7d2fe;
+  font-weight: 600;
+}
+
+.shalat-waktu {
+  font-size: 17px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* ===============================
+   CUACA
+================================ */
+.cuaca-card {
+  margin-bottom: 24px;
+}
+
 .cuaca-table {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  border: 1px solid #ffffff22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .cuaca-row {
   display: grid;
   grid-template-columns: 70px 60px 70px 80px 1fr;
   padding: 10px 12px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid #ffffff15;
-  color: white;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
 }
+
 .cuaca-row:last-child {
   border-bottom: none;
 }
+
 .cuaca-row.header {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.14);
   font-weight: bold;
-  color: #fff;
   text-align: center;
 }
-.cuaca-row.header div {
-  padding: 4px 0;
-}
+
+/* ===============================
+   RESPONSIVE
+================================ */
 @media (min-width: 600px) {
   .menu-card {
     width: 140px;

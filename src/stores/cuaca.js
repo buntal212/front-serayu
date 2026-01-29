@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia'
 import { api } from 'src/boot/axios'
+import { notifError } from 'src/modules/notifs'
 
 export const useCuacaStore = defineStore('cuaca', {
   state: () => ({
     loading: false,
+    items: [],
     rawData: [],
     listJam: [],
   }),
@@ -66,6 +68,24 @@ export const useCuacaStore = defineStore('cuaca', {
       }
 
       return list[code] ?? 'Tidak diketahui'
+    },
+    async jadwatshalat() {
+      this.loading = true
+      try {
+        const { data: resp } = await api.get('/jadwalshalat')
+        const today = new Date().toLocaleDateString('en-CA')
+        const jadwal = resp?.data?.data?.jadwal?.[today]
+        if (jadwal) {
+          this.items = { ...jadwal }
+          delete this.items.tanggal
+        }
+        console.log('jadwal shalat hari ini', this.items)
+      } catch (err) {
+        notifError(err.response?.data?.message || 'Gagal menghapus data')
+        throw err
+      } finally {
+        this.loading = false
+      }
     },
   },
 })

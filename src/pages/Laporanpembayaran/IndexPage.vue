@@ -87,6 +87,6 @@ async function exportToPDF() {
 </script>
 <style scoped>
 .dashboard-bg {
-  background: linear-gradient(160deg, #0f0f0f, #1a1a1a, #111827);
+  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
 }
 </style>
