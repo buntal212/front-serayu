@@ -8,7 +8,7 @@ import {
   createHandlerBoundToURL,
 } from 'workbox-precaching'
 import { registerRoute, NavigationRoute } from 'workbox-routing'
-import { NetworkFirst, CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { NetworkFirst, CacheFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 
 self.addEventListener('fetch', (event) => {
@@ -43,8 +43,15 @@ cleanupOutdatedCaches()
 const navigationHandler = createHandlerBoundToURL('index.html')
 
 registerRoute(
-  new NavigationRoute(navigationHandler, {
-    denylist: [/^\/workbox-(.)*\.js$/, /^\/__/],
+  ({ request }) => request.destination === 'style' || request.destination === 'script',
+  new NetworkFirst({
+    cacheName: 'static-assets-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 7 * 24 * 60 * 60,
+      }),
+    ],
   }),
 )
 
@@ -53,6 +60,12 @@ registerRoute(
     denylist: [/^\/workbox-(.)*\.js$/, /^\/__/],
   }),
 )
+
+// registerRoute(
+//   new NavigationRoute(navigationHandler, {
+//     denylist: [/^\/workbox-(.)*\.js$/, /^\/__/],
+//   }),
+// )
 
 // ----------------------
 // API, image, font, static assets caching
@@ -95,18 +108,18 @@ registerRoute(
   }),
 )
 
-registerRoute(
-  ({ request }) => request.destination === 'style' || request.destination === 'script',
-  new StaleWhileRevalidate({
-    cacheName: 'static-assets-cache',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 50,
-        maxAgeSeconds: 7 * 24 * 60 * 60,
-      }),
-    ],
-  }),
-)
+// registerRoute(
+//   ({ request }) => request.destination === 'style' || request.destination === 'script',
+//   new StaleWhileRevalidate({
+//     cacheName: 'static-assets-cache',
+//     plugins: [
+//       new ExpirationPlugin({
+//         maxEntries: 50,
+//         maxAgeSeconds: 7 * 24 * 60 * 60,
+//       }),
+//     ],
+//   }),
+// )
 
 // Push Notifications
 self.addEventListener('push', (event) => {

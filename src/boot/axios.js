@@ -54,4 +54,10 @@ api.interceptors.response.use(
   },
 )
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload()
+  })
+}
+
 export { api }

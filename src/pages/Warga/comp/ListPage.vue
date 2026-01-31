@@ -50,13 +50,7 @@
         >
           <!-- ROW: Nama + Button Delete -->
           <div class="row items-center justify-between">
-            <div class="warga-name">
-              {{
-                w.nokk === '3574030506061835' || w.nokk === 3574030506061835
-                  ? 'Mas ' + w.name
-                  : 'Bpk. ' + w.name
-              }}
-            </div>
+            <div class="warga-name">Keluarga {{ w.name }}</div>
           </div>
 
           <!-- Baris kedua: No. KK -->
