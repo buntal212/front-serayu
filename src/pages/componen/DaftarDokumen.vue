@@ -15,7 +15,7 @@
           />
 
           <div class="text-center q-mt-sm text-black text-subtitle2 ellipsis">
-            {{ x.nama }}
+            {{ x.jenisdok === 'Kartu Keluarga' ? 'Dokumen KK' : x.nama }}
           </div>
 
           <div class="row justify-around q-mt-sm">
@@ -62,12 +62,22 @@
   <q-dialog v-model="store.dialog">
     <q-card class="form-card">
       <q-card-section>
-        <div class="text-h6">Tambahkan Anggota Keluarga</div>
+        <div class="text-h6">Tambahkan Dokumen Anggota Keluarga</div>
       </q-card-section>
 
       <q-separator />
       <q-form @submit="simpanrinci">
         <q-card-section style="max-height: 50vh" class="scroll">
+          <q-select
+            v-model="store.formrinci.jenis"
+            label="Jenis Dokumen"
+            dense
+            filled
+            class="form-input"
+            dark
+            :options="['Kartu Keluarga', 'Kartu Tanda Penduduk']"
+            :rules="[(val) => !!val || 'Wajib diisi']"
+          />
           <q-input
             v-model="store.formrinci.nama"
             label="Nama Lengkap"
@@ -76,6 +86,7 @@
             class="form-input"
             dark
             :rules="[(val) => !!val || 'Wajib diisi']"
+            v-if="store.formrinci.jenis === 'Kartu Tanda Penduduk'"
           />
           <q-input
             v-model="store.formrinci.noktp"
@@ -85,12 +96,13 @@
             class="form-input"
             dark
             :rules="[(val) => !!val || 'Wajib diisi']"
+            v-if="store.formrinci.jenis === 'Kartu Tanda Penduduk'"
           />
           <q-uploader
             ref="uploaderRef"
             :key="store.resetUploaderKey"
             style="max-width: 300px"
-            label="Masukkan KTP"
+            label="Masukkan Dokumen"
             max-file-size="5242880"
             accept=".jpg, .jpeg"
             @added="onFileAdded"

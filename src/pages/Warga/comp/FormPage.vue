@@ -33,6 +33,13 @@
           :rules="[(val) => !!val || 'Wajib diisi']"
         />
         <div class="q-mt-lg column items-center q-gutter-sm">
+          <!-- <q-btn
+            label="Upload KK"
+            color="green"
+            glossy
+            class="btn-submit full-width"
+            @click="uploadkk"
+          /> -->
           <q-btn
             type="submit"
             label="Simpan"
@@ -44,7 +51,7 @@
           <!-- <div v-if="store.form.id" class="q-mt-sm"> -->
           <q-btn
             v-if="store.form.id"
-            label="Tambah Anggota Keluarga"
+            label="Tambah Dokumen Anggota Keluarga"
             color="primary"
             glossy
             class="btn-submit full-width"
@@ -97,13 +104,19 @@ function onSubmit() {
 
 function tambahanggota(yangakses, yangdiakses) {
   // store.formrinci.id_heder = ''
-  if (yangakses === 'Programer') {
-    store.dialog = true
+  if (yangdiakses === '' || yangdiakses === null) {
+    notifError('Isi Dulu No KKnya...!!!')
   } else {
-    if (yangdiakses === '3574030701890001') {
-      notifError('Akses Ditolak...!!!')
-    } else {
+    if (yangakses === 'Programer') {
       store.dialog = true
+      store.formrinci.nokk = yangdiakses
+    } else {
+      if (yangdiakses === '3574030701890001') {
+        notifError('Akses Ditolak...!!!')
+      } else {
+        store.dialog = true
+        store.formrinci.nokk = yangdiakses
+      }
     }
   }
 }

@@ -23,9 +23,11 @@ export const useWargaStore = defineStore('mwarga', {
     },
     formrinci: {
       id: '',
+      jenis: 'Kartu Tanda Penduduk',
       id_heder: '',
       nama: '',
       noktp: '',
+      nokk: '',
     },
     formregister: {
       nokk: '',
