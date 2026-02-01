@@ -124,9 +124,9 @@ const props = defineProps({
 })
 
 function jenisbelanja(val) {
-  if (val === 1) {
+  if (val === '1' || val === 1) {
     return 'Aset'
-  } else if (val === 2) {
+  } else if (val === '2' || val === 2) {
     return 'Habis Pakai'
   } else {
     return '-'

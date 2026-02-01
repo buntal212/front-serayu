@@ -6,6 +6,7 @@ import { notifError, notifSuccess } from 'src/modules/notifs'
 export const useBelanjaStore = defineStore('belanja', {
   state: () => ({
     items: [],
+    itemsrincian: [],
     loading: false,
     rincianloading: false,
     dialog: false,
