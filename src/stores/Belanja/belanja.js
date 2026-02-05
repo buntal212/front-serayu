@@ -57,10 +57,35 @@ export const useBelanjaStore = defineStore('belanja', {
         api
           .post('/transaksi/transaksibelanja/simpan', this.form)
           .then(({ data }) => {
-            this.form.notrans = data?.data[0]?.notrans
-            this.items.unshift(data?.data[0])
-            this.form.totalbelanja += this.form.subtotal
-            this.rincian.unshift(data?.data[0]?.rincian[0])
+            const header = data?.data?.[0]
+            const rincianBaru = header?.rincian?.[0]
+
+            // ✅ rincian selalu ditambah
+            if (rincianBaru) {
+              this.rincian.unshift(rincianBaru)
+              console.log('sasasasa', this.form.totalbelanja)
+              const totalbelanjasekarang = header?.totalbelanja
+              this.form.totalbelanja = totalbelanjasekarang + this.form.subtotal
+            }
+
+            // 🔍 cek header sudah ada di items atau belum
+            const index = this.items.findIndex((item) => item.notrans === header?.notrans)
+            if (index === -1 && header?.notrans) {
+              // ➕ belum ada → tambah di depan
+              this.items.unshift(header)
+            } else if (index !== -1) {
+              // 🔄 sudah ada → update datanya
+              this.items[index] = {
+                ...this.items[index],
+                ...header,
+              }
+            }
+
+            // sync ke form
+            if (header?.notrans) {
+              this.form.notrans = header.notrans
+            }
+
             this.initResetrincian()
             this.rincianloading = false
             notifSuccess(data?.message)
@@ -74,6 +99,16 @@ export const useBelanjaStore = defineStore('belanja', {
           })
       })
     },
+    // async hapusrincian(val) {
+    //   this.rincianloading = true
+    //   const payload = {
+    //     id: val.id,
+    //     notrans: this.form.notrans,
+    //   }
+    //   const { data } = await api.post('/transaksi/transaksibelanja/hapus-rincian', payload)
+
+    //   // this.rincian = this.rincian.filter((x) => x.id !== val.id)
+    // },
     initReset() {
       this.form.id = ''
       this.form.notrans = ''

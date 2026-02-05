@@ -115,7 +115,7 @@
             type="submit"
             icon="add"
             size="sm"
-            color="red-7"
+            color="blue-7"
             glossy
             class="btn-submit"
             :loading="store.loading"
@@ -131,6 +131,7 @@
             <div class="item-name text-weight-medium text-dark">{{ x.namabarang }}</div>
             <div class="item-subtotal text-primary text-weight-bold">
               Rp {{ formatDouble(x.subtotal, 0) }}
+              <q-btn icon="delete" color="red" rounded size="sm" dense @click="hapus(x)" />
             </div>
           </div>
 
@@ -158,6 +159,10 @@ const emits = defineEmits(['back'])
 function onSubmit() {
   store.initResetrincian
   store.dialog = true
+}
+
+function hapus(item) {
+  store.hapusrincian(item)
 }
 
 const props = defineProps({
