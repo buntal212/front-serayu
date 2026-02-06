@@ -8,6 +8,7 @@ export const useBelanjaStore = defineStore('belanja', {
     items: [],
     itemsrincian: [],
     loading: false,
+    loadinghapusrinci: false,
     rincianloading: false,
     dialog: false,
     params: {
@@ -99,16 +100,56 @@ export const useBelanjaStore = defineStore('belanja', {
           })
       })
     },
-    // async hapusrincian(val) {
-    //   this.rincianloading = true
-    //   const payload = {
-    //     id: val.id,
-    //     notrans: this.form.notrans,
-    //   }
-    //   const { data } = await api.post('/transaksi/transaksibelanja/hapus-rincian', payload)
+    async hapusrincian(val) {
+      this.loadinghapusrinci = true
+      try {
+        const payload = {
+          id: val.id,
+          notrans: this.form.notrans,
+          totalbelanja: this.form.totalbelanja - val.subtotal,
+        }
 
-    //   // this.rincian = this.rincian.filter((x) => x.id !== val.id)
-    // },
+        const { data } = await api.post(
+          '/transaksi/transaksibelanja/hapus-rincian-belanja',
+          payload,
+        )
+
+        const header = data?.data?.[0]
+
+        // 1️⃣ hapus rincian di frontend
+        this.rincian = this.rincian.filter((x) => x.id !== val.id)
+
+        // 2️⃣ update header kalau backend kirim data terbaru
+        if (header?.notrans) {
+          const idx = this.items.findIndex((item) => item.notrans === header.notrans)
+
+          if (idx !== -1) {
+            // update header lama
+            this.items.splice(idx, 1, {
+              ...this.items[idx],
+              ...header,
+            })
+          }
+        }
+
+        // 3️⃣ sinkronkan total
+        if (header?.totalbelanja !== undefined) {
+          this.form.totalbelanja = header.totalbelanja
+        }
+        notifSuccess(data?.message)
+        // this.loadinghapusrinci = false
+      } catch (err) {
+        console.error(err)
+        this.$q.notify({
+          type: 'negative',
+          message: 'Gagal menghapus rincian',
+        })
+      } finally {
+        this.loadinghapusrinci = false
+        this.clickedId = null
+      }
+    },
+
     initReset() {
       this.form.id = ''
       this.form.notrans = ''

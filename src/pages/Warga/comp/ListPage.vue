@@ -64,7 +64,7 @@
               color="red"
               size="sm"
               @click.stop="emits('hapus', w)"
-              :loading="store.loadinghapus && store.form.id === w.id"
+              :loading="store.loadinghapus && store.rincian.id === w.id"
             />
           </div>
         </q-card>

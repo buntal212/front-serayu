@@ -130,8 +130,16 @@
           <div class="item-header row justify-between items-center q-mb-xs">
             <div class="item-name text-weight-medium text-dark">{{ x.namabarang }}</div>
             <div class="item-subtotal text-primary text-weight-bold">
-              Rp {{ formatDouble(x.subtotal, 0) }}
-              <q-btn icon="delete" color="red" rounded size="sm" dense @click="hapus(x)" />
+              Rp {{ formatDouble(x.subtotal, 0) }} || {{ store.rincian.id }}
+              <q-btn
+                icon="delete"
+                color="red"
+                rounded
+                size="sm"
+                dense
+                @click="hapus(x)"
+                :loading="store.loadinghapusrinci"
+              />
             </div>
           </div>
 
