@@ -19,7 +19,7 @@
           dense
           filled
           v-model="store.params.q"
-          placeholder="Cari warga..."
+          placeholder="Cari belanja..."
           class="search-input"
           clearable
           @clear="search = ''"

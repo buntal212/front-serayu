@@ -23,10 +23,12 @@
         <div style="display: none">
           <LaporanPDF
             ref="pdfRef"
+            :qrKetua="qrKetua"
+            :qrBendahara="qrBendahara"
             :items="store.items"
             :bulanx="Number(store.params.bulan)"
             :tahun="store.params.tahun"
-            :saldoawal="store.saldoawal"
+            :saldoawal="Number(store.saldoawal)"
             :tanggaltutupsaldo="store.tanggaltutupsaldo"
           />
         </div>
@@ -44,11 +46,18 @@ import LaporanPDF from './comp/LaporanPDF.vue'
 import { getNamaBulan } from 'src/utils/dateHelper'
 import { useBulanStore } from 'src/stores/bulan'
 import { useLapKasStore } from 'src/stores/laporan/laporankas'
+import QRCode from 'qrcode'
 
 const storebulan = useBulanStore()
 const store = useLapKasStore()
 const pdfRef = ref(null)
+const qrKetua = ref('')
+const qrBendahara = ref('')
 
+onMounted(async () => {
+  qrKetua.value = await QRCode.toDataURL('Ketua')
+  qrBendahara.value = await QRCode.toDataURL('Bendahara')
+})
 onMounted(() => {
   storebulan.getlist()
 })

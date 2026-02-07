@@ -6,16 +6,26 @@
         <!-- Header Form -->
         <div class="row items-center justify-between q-mb-sm">
           <div class="text-h6 text-white">Form Belanja</div>
-
-          <q-btn
-            round
-            icon="arrow_back"
-            color="red-7"
-            size="sm"
-            glossy
-            class="btn-back"
-            @click="emits('back')"
-          />
+          <div class="q-gutter-xs">
+            <q-btn
+              round
+              icon="print"
+              color="blue"
+              size="sm"
+              glossy
+              class="btn-back"
+              @click="cetak()"
+            />
+            <q-btn
+              round
+              icon="arrow_back"
+              color="red-7"
+              size="sm"
+              glossy
+              class="btn-back"
+              @click="emits('back')"
+            />
+          </div>
         </div>
 
         <!-- No Transaksi & Total Belanja -->
@@ -130,7 +140,7 @@
           <div class="item-header row justify-between items-center q-mb-xs">
             <div class="item-name text-weight-medium text-dark">{{ x.namabarang }}</div>
             <div class="item-subtotal text-primary text-weight-bold">
-              Rp {{ formatDouble(x.subtotal, 0) }} || {{ store.rincian.id }}
+              Rp {{ formatDouble(x.subtotal, 0) }}
               <q-btn
                 icon="delete"
                 color="red"
@@ -138,13 +148,13 @@
                 size="sm"
                 dense
                 @click="hapus(x)"
-                :loading="store.loadinghapusrinci"
+                :loading="store.loadinghapusrinci && store.rincianid === x.id"
               />
             </div>
           </div>
 
           <div class="item-detail text-grey-7">
-            <span>{{ x.jumlah }}</span>
+            <span>{{ x.jumlah }} {{ x.satuan }}</span>
             <span class="multiply q-mx-xs">×</span>
             <span>Rp {{ formatDouble(x.harga, 0) }}</span>
           </div>
@@ -152,6 +162,9 @@
       </q-card>
     </q-form>
     <FormRincian @close="store.dialog = false" />
+    <div style="display: none">
+      <CetakPDF ref="pdfRef" />
+    </div>
   </q-page>
 </template>
 
@@ -159,8 +172,10 @@
 import { useBelanjaStore } from 'src/stores/Belanja/belanja'
 import DateInput from 'src/components/DateInput.vue'
 import FormRincian from './FormRincian.vue'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { formatDouble } from 'src/modules/formatter'
+import CetakPDF from './CetakPDF.vue'
+import html2pdf from 'html2pdf.js'
 
 const store = useBelanjaStore()
 const emits = defineEmits(['back'])
@@ -170,6 +185,7 @@ function onSubmit() {
 }
 
 function hapus(item) {
+  store.rincianid = item.id
   store.hapusrincian(item)
 }
 
@@ -187,6 +203,50 @@ const jenisbelanja = [
   { label: 'Aset', value: 1 },
   { label: 'Habis Pakai', value: 2 },
 ]
+
+const pdfRef = ref(null)
+async function cetak() {
+  const element = pdfRef.value?.$el
+  if (!element) return
+
+  const filename = `Belanja_${store.form.notrans}_${store.form.tgl}.pdf`
+
+  try {
+    const blob = await html2pdf()
+      .set({
+        margin: 10, // mm
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        },
+      })
+      .from(element)
+      .output('blob') // ✅ YANG BENAR
+
+    // File System Access API (Chromium / PWA)
+    const handle = await window.showSaveFilePicker({
+      suggestedName: filename,
+      types: [
+        {
+          description: 'PDF Files',
+          accept: { 'application/pdf': ['.pdf'] },
+        },
+      ],
+    })
+
+    const writable = await handle.createWritable()
+    await writable.write(blob)
+    await writable.close()
+  } catch (err) {
+    console.error('Gagal cetak PDF:', err)
+  }
+}
 
 onMounted(() => {
   if (props.data) {

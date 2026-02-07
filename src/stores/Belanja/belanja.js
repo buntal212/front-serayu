@@ -26,12 +26,14 @@ export const useBelanjaStore = defineStore('belanja', {
       totalbelanja: 0,
       namabarang: '',
       jumlah: 1,
+      satuan: '',
       harga: 0,
       subtotal: 0,
     },
     rincian: [],
     harga: 0,
     isError: false,
+    rincianid: '',
   }),
   actions: {
     getlist() {

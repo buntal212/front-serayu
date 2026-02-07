@@ -33,6 +33,16 @@
         />
 
         <q-input
+          v-model.number="store.form.satuan"
+          label="Satuan"
+          dense
+          outlined
+          class="form-input"
+          dark
+          :rules="[(v) => !!v || 'Wajib diisi']"
+        />
+
+        <q-input
           v-model="store.harga"
           label="Harga Satuan"
           dense

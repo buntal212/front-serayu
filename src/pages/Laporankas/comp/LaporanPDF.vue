@@ -1,10 +1,10 @@
 <template>
   <div class="laporan-print">
     <!-- Header -->
+
+    <KopDokumen :namadokumen="namadokumen" />
     <div class="laporan-header">
       <div class="text-center">
-        <div class="text-bold text-h4">LAPORAN KAS</div>
-        <div class="text-subtitle">PERUMAHAN BENGAWAN INDRAH</div>
         <div class="text-caption">
           Bulan {{ getNamaBulan(bulanx) }} {{ tahun }}<br />
           Dicetak: {{ formatTanggal(new Date()) }}
@@ -50,20 +50,51 @@
         </tr>
       </tbody>
     </table>
+    <div class="ttd-wrapper">
+      <table class="ttd-table">
+        <tr>
+          <td class="ttd-col">
+            Mengetahui,<br />
+            <b>Ketua</b>
+
+            <div class="qr-box">
+              <img :src="qrKetua" />
+            </div>
+
+            <b>( Ketua )</b>
+          </td>
+
+          <td class="ttd-col">
+            Dibuat oleh,<br />
+            <b>Bendahara</b>
+
+            <div class="qr-box">
+              <img :src="qrBendahara" />
+            </div>
+
+            <b>( Bendahara )</b>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
 <script setup>
+import KopDokumen from 'src/components/KopDokumen.vue'
 import { formatDouble } from 'src/modules/formatter'
 import { getNamaBulan } from 'src/utils/dateHelper'
 import { computed } from 'vue'
 
+const namadokumen = 'Laporan Kas'
 const props = defineProps({
   items: Array,
   bulanx: Number,
   tahun: Number,
   saldoawal: Number,
   tanggaltutupsaldo: String,
+  qrKetua: String,
+  qrBendahara: String,
 })
 
 const totalMasuk = computed(() => {
@@ -197,5 +228,21 @@ tbody tr:nth-child(even) {
 .text-right {
   text-align: right;
   padding-right: 8px;
+}
+.ttd-wrapper {
+  page-break-before: always; /* 🔥 INI KUNCINYA */
+  break-before: page;
+  margin-top: 20mm;
+}
+.qr-box {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.qr-box img {
+  width: 120px;
+  height: 120px;
+  display: block;
+  margin: 12px auto;
 }
 </style>
