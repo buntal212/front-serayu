@@ -89,6 +89,7 @@ import { useCuacaStore } from 'src/stores/cuaca'
 import { storeToRefs } from 'pinia'
 import AppLoader from './componen/AppLoader.vue'
 import { useAutoLogout } from 'src/boot/autologout'
+import { requestFcmToken } from 'src/notif/firebase'
 
 const router = useRouter()
 const pageLoading = ref(true)
@@ -137,6 +138,11 @@ const groupedCuaca = computed(() =>
     return acc
   }, {}),
 )
+
+onMounted(async () => {
+  const token = await requestFcmToken()
+  console.log('🔥 TOKEN FINAL:', token)
+})
 </script>
 
 <style scoped>

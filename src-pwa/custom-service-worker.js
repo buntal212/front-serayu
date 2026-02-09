@@ -10,6 +10,8 @@ import {
 import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { NetworkFirst, CacheFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
+import { initializeApp } from 'firebase/app'
+import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw'
 
 self.addEventListener('fetch', (event) => {
   // Jangan cache folder perumbi
@@ -122,17 +124,17 @@ registerRoute(
 // )
 
 // Push Notifications
-self.addEventListener('push', (event) => {
-  const data = event.data?.json() || {}
-  const title = data.title || 'Notification'
-  const options = {
-    body: data.body || 'You have a new message',
-    icon: data.icon || '/icons/icon-192x192.png',
-    badge: data.badge || '/icons/icon-128x128.png',
-    data: data.url || '/',
-  }
-  event.waitUntil(self.registration.showNotification(title, options))
-})
+// self.addEventListener('push', (event) => {
+//   const data = event.data?.json() || {}
+//   const title = data.title || 'Notification'
+//   const options = {
+//     body: data.body || 'You have a new message',
+//     icon: data.icon || '/icons/icon-192x192.png',
+//     badge: data.badge || '/icons/icon-128x128.png',
+//     data: data.url || '/',
+//   }
+//   event.waitUntil(self.registration.showNotification(title, options))
+// })
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
@@ -149,4 +151,29 @@ self.addEventListener('notificationclick', (event) => {
 
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') self.skipWaiting()
+})
+
+/* =======================
+   🔔 FIREBASE FCM
+======================= */
+
+const firebaseApp = initializeApp({
+  apiKey: 'AIzaSyASYtJXVc9H_96OZtw6oxUb_-WvZ1zUOYk',
+  authDomain: 'perum-bi-app.firebaseapp.com',
+  projectId: 'perum-bi-app',
+  storageBucket: 'perum-bi-app.firebasestorage.app',
+  messagingSenderId: '654914326199',
+  appId: '1:654914326199:web:13b79c606e14618044c732',
+  measurementId: 'G-V82S7G02L2',
+})
+
+const messaging = getMessaging(firebaseApp)
+
+onBackgroundMessage(messaging, (payload) => {
+  self.registration.showNotification(payload.notification?.title || 'Notifikasi', {
+    body: payload.notification?.body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-128x128.png',
+    data: payload.data?.url || '/',
+  })
 })
