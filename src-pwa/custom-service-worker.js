@@ -11,7 +11,7 @@ import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { NetworkFirst, CacheFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { initializeApp } from 'firebase/app'
-import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw'
+// import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw'
 
 self.addEventListener('fetch', (event) => {
   // Jangan cache folder perumbi
@@ -157,6 +157,7 @@ self.addEventListener('message', (event) => {
    🔔 FIREBASE FCM
 ======================= */
 
+// eslint-disable-next-line no-unused-vars
 const firebaseApp = initializeApp({
   apiKey: 'AIzaSyASYtJXVc9H_96OZtw6oxUb_-WvZ1zUOYk',
   authDomain: 'perum-bi-app.firebaseapp.com',
@@ -167,13 +168,38 @@ const firebaseApp = initializeApp({
   measurementId: 'G-V82S7G02L2',
 })
 
-const messaging = getMessaging(firebaseApp)
+// const messaging = getMessaging(firebaseApp)
 
-onBackgroundMessage(messaging, (payload) => {
-  self.registration.showNotification(payload.notification?.title || 'Notifikasi', {
-    body: payload.notification?.body,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-128x128.png',
-    data: payload.data?.url || '/',
-  })
+// onBackgroundMessage(messaging, (payload) => {
+//   const title = payload.data?.title || 'Notifikasi'
+//   const body = payload.data?.body || ''
+
+//   const url = payload.data?.notrans ? `/transaksi/${payload.data.notrans}` : '/'
+
+//   self.registration.showNotification(title, {
+//     body: body,
+//     icon: '/icons/icon-192x192.png',
+//     badge: '/icons/icon-128x128.png',
+//     data: url,
+//   })
+// })
+
+self.addEventListener('push', (event) => {
+  if (!event.data) return
+
+  const payload = event.data.json()
+  console.log('🔥 PUSH PAYLOAD:', event.data.json())
+
+  const title = payload.data?.title || 'Notifikasi'
+  const body = payload.data?.body || ''
+  const url = payload.data?.notrans ? `/transaksi/${payload.data.notrans}` : '/'
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: body,
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-128x128.png',
+      data: url,
+    }),
+  )
 })

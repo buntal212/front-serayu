@@ -62,6 +62,7 @@
           class="form-input"
           dark
           @filter="filterWarga"
+          @update:model-value="(val) => namawarga(val)"
           :rules="[(val) => !!val || 'No. Ktp wajib diisi']"
         />
 
@@ -177,6 +178,11 @@ function filterWarga(val, update) {
 function carinominal(val) {
   const data = props.iuran.find((v) => v.id === val)
   store.form.jumlah = data.nominal
+}
+
+function namawarga(val) {
+  const data = props.warga.find((v) => v.id === val)
+  store.form.nama = data.name
 }
 
 function onSubmit() {

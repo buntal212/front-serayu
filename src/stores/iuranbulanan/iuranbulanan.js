@@ -18,6 +18,7 @@ export const usePembayaranIuranBulananStore = defineStore('pembayaranIuranbulana
       bulan: new Date().getMonth() + 1,
       tahun: new Date().getFullYear(),
       warga_id: '',
+      nama: '',
       jeniskewargaan: '',
       jumlah: '',
       carabayar: '',
