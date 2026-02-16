@@ -17,8 +17,9 @@
     </q-card>
 
     <!-- Menu Grid -->
+
     <q-card flat bordered class="menu-container q-pa-md">
-      <q-card-section>
+      <q-card-section class="row items-center justify-center">
         <div class="menu-grid">
           <q-card
             v-for="item in menuItems"
@@ -31,11 +32,22 @@
             :style="{ background: item.color }"
             @click="navigate(item.link)"
           >
-            <q-card-section class="row items-center justify-center">
-              <q-icon :name="item.icon" size="36px" class="text-white" />
+            <q-card-section class="row items-center justify-center relative-position">
+              <div class="icon-wrapper">
+                <q-icon :name="item.icon" size="36px" class="text-white" />
+
+                <q-badge
+                  v-if="item.name === 'notif' && storenotif.unreadCount > 0"
+                  class="notif-badge-modern"
+                  :label="storenotif.unreadCount > 9 ? '9+' : storenotif.unreadCount"
+                />
+              </div>
             </q-card-section>
+
             <q-card-section class="text-center">
-              <div class="menu-label">{{ item.label }}</div>
+              <div class="menu-label text-white">
+                {{ item.label }}
+              </div>
             </q-card-section>
           </q-card>
         </div>
@@ -90,10 +102,12 @@ import { storeToRefs } from 'pinia'
 import AppLoader from './componen/AppLoader.vue'
 import { useAutoLogout } from 'src/boot/autologout'
 import { requestFcmToken } from 'src/notif/firebase'
+import { usenotifikasiStore } from 'src/stores/notif/notif'
 
 const router = useRouter()
 const pageLoading = ref(true)
 const storecuaca = useCuacaStore()
+const storenotif = usenotifikasiStore()
 useAutoLogout(router)
 
 const defaultAvatar =
@@ -141,6 +155,7 @@ const groupedCuaca = computed(() =>
 
 onMounted(async () => {
   const token = await requestFcmToken()
+  storenotif.getUnreadCount()
   console.log('🔥 TOKEN FINAL:', token)
 })
 </script>
@@ -294,6 +309,34 @@ onMounted(async () => {
   font-weight: bold;
   text-align: center;
 }
+
+.icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.notif-badge-modern {
+  position: absolute;
+  top: -15px;
+  right: -40px;
+  font-size: 12px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 10px;
+  background: red;
+}
+
+/* @keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(255, 59, 48, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+  }
+} */
 
 /* ===============================
    RESPONSIVE

@@ -13,7 +13,7 @@ const router = useRouter()
 
 onMounted(() => {
   // Bersihkan data
-  console.log('logout')
+  // console.log('logout')
   localStorage.removeItem('token')
   localStorage.removeItem('user')
   localStorage.removeItem('menus')

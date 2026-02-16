@@ -5,6 +5,7 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '/notif', component: () => import('pages/Notif/IndexPage.vue') },
       { path: '/profile', component: () => import('pages/Profile/IndexPage.vue') },
       { path: '/warga', component: () => import('pages/Warga/IndexPage.vue') },
       { path: '/iuranbulanan', component: () => import('pages/Iuranbulanan/IndexPage.vue') },
