@@ -41,7 +41,6 @@
           option-value="id"
           emit-value
           map-options
-          class="form-input"
           dark
           :rules="[(val) => !!val || 'Nama wajib diisi']"
         />
@@ -131,7 +130,7 @@
 
 <script setup>
 import { usePembayaranIuranBulananStore } from 'src/stores/iuranbulanan/iuranbulanan'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const store = usePembayaranIuranBulananStore()
 const emits = defineEmits(['back'])
@@ -157,6 +156,15 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+})
+
+const tahunOptions = computed(() => {
+  const options = []
+  const tahunIni = store.form.tahun || new Date().getFullYear()
+  for (let t = tahunIni - 1; t <= tahunIni + 1; t++) {
+    options.push({ id: t, nama: t.toString() })
+  }
+  return options
 })
 
 const options = ref([props.warga])
