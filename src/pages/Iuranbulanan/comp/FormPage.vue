@@ -41,6 +41,7 @@
           option-value="id"
           emit-value
           map-options
+          class="form-input"
           dark
           :rules="[(val) => !!val || 'Nama wajib diisi']"
         />
