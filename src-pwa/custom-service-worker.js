@@ -183,30 +183,44 @@ const firebaseApp = initializeApp({
 //     data: url,
 //   })
 // })
+self.addEventListener('push', function (event) {
+  const payload = event.data ? event.data.json() : {}
+  // console.log('🔥 PUSH PAYLOAD:', payload)
+
+  const title = payload.notification?.title || payload.data?.title || 'Notifikasi Baru'
+  const body = payload.notification?.body || payload.data?.body || ''
+
+  const options = {
+    body: body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-192x192.png',
+    data: payload.data || {}, // penting untuk notificationclick
+  }
+
+  event.waitUntil(self.registration.showNotification(title, options))
+})
 
 self.addEventListener('notificationclick', function (event) {
   event.notification.close()
-  console.log('event', event)
-  // ambil URL dari data notifikasi
-  const url = event.notification.data?.notrans
-    ? `/notif/${event.notification.data.notrans}` // URL detail notif
-    : '/notif' // fallback ke list
+  // console.log('Notification click', event)
 
-  // buka atau fokus window
+  // ambil id atau notrans dari data
+  const notrans = event.notification.data?.id
+  // console.log('notrans', notrans)
+
+  const url = notrans ? `/notif/${notrans}` : '/notif'
+
+  // console.log('notrans', url)
+
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // cek apakah ada window yang sudah terbuka
       for (const client of clientList) {
-        if (client.url.includes(location.origin) && 'focus' in client) {
+        if ('focus' in client) {
           client.focus()
-          client.navigate(url)
-          return
+          return client.navigate(url)
         }
       }
-      // kalau gak ada, buka window baru
-      if (clients.openWindow) {
-        return clients.openWindow(url)
-      }
+      return clients.openWindow(url)
     }),
   )
 })
