@@ -205,11 +205,11 @@ self.addEventListener('notificationclick', function (event) {
   // console.log('Notification click', event)
 
   // ambil id atau notrans dari data
-  const notrans = event.notification.data?.id
+  // const notrans = event.notification.data?.id
   // console.log('notrans', notrans)
 
-  const url = notrans ? `/notif/${notrans}` : '/notif'
-
+  // const url = notrans ? `/notif/${notrans}` : '/notif'
+  const url = '/notif'
   // console.log('notrans', url)
 
   event.waitUntil(
