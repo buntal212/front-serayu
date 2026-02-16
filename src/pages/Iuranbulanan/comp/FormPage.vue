@@ -48,7 +48,6 @@
 
         <q-select
           v-model="store.form.warga_id"
-          round
           dense
           outlined
           label="Nama Warga"
