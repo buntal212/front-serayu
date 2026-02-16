@@ -9,7 +9,7 @@
         class="action-btn"
         label="Tandai Semua Dibaca"
         @click="markAllRead"
-        v-if="store.notifications && store.notifications.length > 0"
+        v-if="store.unreadCount.length > 0"
       />
     </div>
 
