@@ -184,22 +184,49 @@ const firebaseApp = initializeApp({
 //   })
 // })
 
-self.addEventListener('push', (event) => {
-  if (!event.data) return
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close()
+  console.log('event', event)
+  // ambil URL dari data notifikasi
+  const url = event.notification.data?.notrans
+    ? `/notif/${event.notification.data.notrans}` // URL detail notif
+    : '/notif' // fallback ke list
 
-  const payload = event.data.json()
-  console.log('🔥 PUSH PAYLOAD:', event.data.json())
-
-  const title = payload.data?.title || 'Notifikasi'
-  const body = payload.data?.body || ''
-  const url = payload.data?.notrans ? `/transaksi/${payload.data.notrans}` : '/'
-
+  // buka atau fokus window
   event.waitUntil(
-    self.registration.showNotification(title, {
-      body: body,
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/icon-128x128.png',
-      data: url,
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // cek apakah ada window yang sudah terbuka
+      for (const client of clientList) {
+        if (client.url.includes(location.origin) && 'focus' in client) {
+          client.focus()
+          client.navigate(url)
+          return
+        }
+      }
+      // kalau gak ada, buka window baru
+      if (clients.openWindow) {
+        return clients.openWindow(url)
+      }
     }),
   )
 })
+
+// self.addEventListener('push', (event) => {
+//   if (!event.data) return
+
+//   const payload = event.data.json()
+//   console.log('🔥 PUSH PAYLOAD:', event.data.json())
+
+//   const title = payload.data?.title || 'Notifikasi'
+//   const body = payload.data?.body || ''
+//   const url = payload.data?.notrans ? `/notif/comp/NotifDetailPage/${payload.data.notrans}` : '/'
+
+//   event.waitUntil(
+//     self.registration.showNotification(title, {
+//       body: body,
+//       icon: '/icons/icon-192x192.png',
+//       badge: '/icons/icon-128x128.png',
+//       data: url,
+//     }),
+//   )
+// })

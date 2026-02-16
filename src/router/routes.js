@@ -6,6 +6,11 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: '/notif', component: () => import('pages/Notif/IndexPage.vue') },
+      {
+        path: '/notif/:id',
+        component: () => import('pages/Notif/comp/NotifDetailPage.vue'),
+        props: true,
+      },
       { path: '/profile', component: () => import('pages/Profile/IndexPage.vue') },
       { path: '/warga', component: () => import('pages/Warga/IndexPage.vue') },
       { path: '/iuranbulanan', component: () => import('pages/Iuranbulanan/IndexPage.vue') },

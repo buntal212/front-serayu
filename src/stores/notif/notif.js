@@ -65,6 +65,10 @@ export const usenotifikasiStore = defineStore('notifikasi-store', {
       this.loadNotifications()
       // this.notifications.forEach((n) => (n.is_read = 1))
     },
+    async loadNotificationDetail(id) {
+      const res = await api.get(`/notif/simpantoken/notifications/${id}`)
+      return res.data
+    },
 
     // async openNotif() {
     //   if (!notif.is_read) {
