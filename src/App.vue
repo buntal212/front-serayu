@@ -47,12 +47,25 @@ function removeListeners() {
   window.removeEventListener('touchstart', resetTimer)
 }
 
+function handleSWMessage(event) {
+  if (event.data?.type === 'OPEN_DETAIL') {
+    // const id = event.data.id
+    // if (id) {
+    // router.push(`/notiflangsung/${id}`)
+    router.push(`/notif`)
+    // }
+  }
+}
+
 onMounted(() => {
+  navigator.serviceWorker?.addEventListener('message', handleSWMessage)
+
   resetTimer()
   addListeners()
 })
 
 onUnmounted(() => {
+  navigator.serviceWorker?.removeEventListener('message', handleSWMessage)
   removeListeners()
   clearTimeout(timeout)
 })

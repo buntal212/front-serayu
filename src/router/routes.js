@@ -6,11 +6,7 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: '/notif', component: () => import('pages/Notif/IndexPage.vue') },
-      {
-        path: '/notif/:id',
-        component: () => import('pages/Notif/comp/NotifDetailPage.vue'),
-        props: true,
-      },
+
       { path: '/profile', component: () => import('pages/Profile/IndexPage.vue') },
       { path: '/warga', component: () => import('pages/Warga/IndexPage.vue') },
       { path: '/iuranbulanan', component: () => import('pages/Iuranbulanan/IndexPage.vue') },
@@ -42,6 +38,12 @@ const routes = [
       { path: '/register', component: () => import('pages/RegisterPage.vue') },
       { path: '/formwarga', component: () => import('pages/FormWarga.vue') },
     ],
+  },
+
+  {
+    path: '/notiflangsung/:id',
+    component: () => import('pages/Notif/comp/NotifDetaillangsungPage.vue'),
+    props: true,
   },
 
   // Always leave this as last one,
