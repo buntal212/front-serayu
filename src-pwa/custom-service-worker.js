@@ -183,21 +183,29 @@ const firebaseApp = initializeApp({
 //     data: url,
 //   })
 // })
-self.addEventListener('push', function (event) {
-  const payload = event.data ? event.data.json() : {}
-  // console.log('🔥 PUSH PAYLOAD:', payload)
-
-  const title = payload.notification?.title || payload.data?.title || 'Notifikasi Baru'
-  const body = payload.notification?.body || payload.data?.body || ''
-
-  const options = {
-    body: body,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-192x192.png',
-    data: payload.data || {}, // penting untuk notificationclick
+self.addEventListener('push', (event) => {
+  let payload = {}
+  if (event.data) {
+    try {
+      payload = event.data.json() // coba parse JSON
+    } catch (event) {
+      console.warn('Payload bukan JSON, pakai string mentah:', event.data.text())
+      payload = { data: { body: event.data.text(), title: 'Notifikasi' } }
+    }
   }
 
-  event.waitUntil(self.registration.showNotification(title, options))
+  const data = payload.data || {}
+  const title = data.title || 'Notifikasi'
+  const body = data.body || ''
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-192x192.png',
+      data,
+    }),
+  )
 })
 
 self.addEventListener('notificationclick', function (event) {

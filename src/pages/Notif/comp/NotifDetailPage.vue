@@ -1,7 +1,7 @@
 <template>
   <q-page padding class="dashboard-bg">
     <div class="q-mb-md">
-      <q-btn flat icon="arrow_back" color="white" label="Kembali" @click="$router.back()" />
+      <q-btn flat icon="arrow_back" color="white" label="Kembali" @click="emits('back')" />
     </div>
 
     <q-card v-if="notif" class="bg-dark text-white shadow-10">
@@ -26,12 +26,19 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+
 import { usenotifikasiStore } from 'src/stores/notif/notif'
 
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+})
 const store = usenotifikasiStore()
-const route = useRoute()
-const notif = ref(null)
+
+const notif = ref(props.data)
+const emits = defineEmits(['back'])
 
 // parsing data_json jika ada
 const parsedData = computed(() => {
@@ -66,7 +73,7 @@ const loadNotifDetail = async (id) => {
 }
 
 onMounted(() => {
-  const id = route.params.id
+  const id = notif.value?.id
   if (id) loadNotifDetail(id)
 })
 

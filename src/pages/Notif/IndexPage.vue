@@ -2,8 +2,8 @@
   <q-page class="dashboard-bg">
     <div class="container">
       <div>
-        <ListPage v-if="isList" @open="bukanotif($event)" @back="isList = true" />
-        <NotifDetailPage v-else @back="isList = true" />
+        <ListPage v-if="isList" @open="bukanotif($event)" />
+        <NotifDetailPage v-else @back="isList = true" :data="datadetail" />
       </div>
     </div>
   </q-page>
@@ -13,16 +13,13 @@
 import { ref } from 'vue'
 import ListPage from './comp/ListPage.vue'
 import NotifDetailPage from './comp/NotifDetailPage.vue'
-import { useRouter } from 'vue-router'
-
 const isList = ref(true)
-const router = useRouter()
-const bukanotif = (notif) => {
-  router.push(`/notif/${notif.id}`)
+const datadetail = ref(null)
+
+function bukanotif(val) {
+  datadetail.value = val
+  isList.value = false
 }
-// function bukanotifx() {
-//   isList.value = false
-// }
 </script>
 
 <style scoped>
