@@ -17,10 +17,18 @@ import { ExpirationPlugin } from 'workbox-expiration'
 self.skipWaiting()
 clientsClaim()
 
+self.addEventListener('install', () => {
+  self.skipWaiting()
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim())
+})
+
 // ----------------------
 // Precache & Cleanup
 // ----------------------
-let manifest = self.__WB_MANIFEST.filter(
+let manifest = (self.__WB_MANIFEST || []).filter(
   (entry, idx, arr) => arr.findIndex((e) => e.url === entry.url) === idx,
 )
 
