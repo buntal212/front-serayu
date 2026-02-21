@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { api } from 'src/boot/axios'
-import { notifError } from 'src/modules/notifs'
+import { notifError, notifSuccess } from 'src/modules/notifs'
 
 export const usenotifikasiStore = defineStore('notifikasi-store', {
   state: () => ({
@@ -11,6 +11,10 @@ export const usenotifikasiStore = defineStore('notifikasi-store', {
     loadingrinci: false,
     isError: false,
     unreadCount: 0,
+    itemsfcmtoken: [],
+    loadingfcmtoken: false,
+    itemsnotifikasiall: [],
+    loadingnotifikasiall: false,
   }),
   actions: {
     async simpantoken(token) {
@@ -68,6 +72,66 @@ export const usenotifikasiStore = defineStore('notifikasi-store', {
     async loadNotificationDetail(id) {
       const res = await api.get(`/notif/simpantoken/notifications/${id}`)
       return res.data
+    },
+    async getlisttoken() {
+      this.loadingfcmtoken = true
+      try {
+        const res = await api.get('/notif/simpantoken/list-token')
+        this.itemsfcmtoken = res.data?.data || []
+        this.loadingfcmtoken = false
+      } catch (err) {
+        console.log(err)
+        this.loadingfcmtoken = false
+      }
+      this.loadingfcmtoken = false
+    },
+    async hapusalltoken() {
+      this.loadingfcmtoken = true
+      await api.get('/notif/simpantoken/hapus-all-token')
+      this.getlisttoken()
+    },
+    async getNotifikasiall() {
+      this.loadingnotifikasiall = true
+      try {
+        const res = await api.get('/notif/simpantoken/notifications-all')
+        this.itemsnotifikasiall = res.data?.data || []
+        this.loadingnotifikasiall = false
+      } catch (err) {
+        console.log(err)
+        this.loadingnotifikasiall = false
+      }
+    },
+    async kirimnotifikasiall() {
+      this.loadingnotifikasiall = true
+      try {
+        const res = await api.get('/notif/simpantoken/kirim-notifikasi-all')
+        if (res.data.status === true) {
+          notifSuccess(res.data.message)
+          this.getNotifikasiall()
+        } else {
+          notifError(res.data.message)
+        }
+        this.loadingnotifikasiall = false
+      } catch (err) {
+        console.log(err)
+        this.loadingnotifikasiall = false
+      }
+    },
+    async hapusallnotifikasiall() {
+      this.loadingnotifikasiall = true
+      try {
+        const res = await api.get('/notif/simpantoken/hapus-all-notifikasi-all')
+        if (res.data.status === true) {
+          notifSuccess(res.data.message)
+          this.getNotifikasiall()
+        } else {
+          notifError(res.data.message)
+        }
+        this.loadingnotifikasiall = false
+      } catch (err) {
+        console.log(err)
+        this.loadingnotifikasiall = false
+      }
     },
 
     // async openNotif() {

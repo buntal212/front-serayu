@@ -24,6 +24,10 @@ const routes = [
         component: () => import('pages/Hakakses/IndexPage.vue'),
       },
       {
+        path: '/seting',
+        component: () => import('pages/Seting/IndexPage.vue'),
+      },
+      {
         path: 'logout',
         component: () => import('src/pages/LogoutPage.vue'),
       },
