@@ -1,42 +1,71 @@
 <template>
-  <q-page class="flex flex-center bg-dark">
+  <q-page class="register-page">
+    <!-- Animated background orbs -->
+    <div class="bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
     <!-- Rain Animation -->
     <div class="rain">
       <i v-for="n in drops" :key="n" :style="dropStyle(n)"></i>
     </div>
 
-    <!-- Login Form -->
-    <q-form @submit="onSubmit" class="login-wrapper">
-      <div class="login">
-        <h2>Perum <br />Bengawan Indah</h2>
+    <!-- Register Form -->
+    <q-form @submit="onSubmit" class="register-wrapper">
+      <div class="register-card">
+        <!-- Brand -->
+        <div class="brand-section">
+          <div class="brand-icon">
+            <q-icon name="person_add" size="36px" />
+          </div>
 
-        <div class="inputBx">
-          <input v-model="store.formregister.username" type="text" placeholder="Username" />
-        </div>
-        <div class="inputBx">
-          <input v-model="store.formregister.password" type="password" placeholder="Password" />
-        </div>
-        <div class="inputBx">
-          <input
-            v-model="store.formregister.confirmpassword"
-            type="password"
-            placeholder="Masukkan Ulang Password"
-          />
+          <h2 class="brand-title">
+            Perum <br />
+            Cluster Serayu
+          </h2>
+
+          <p class="brand-subtitle">Sistem Informasi Warga</p>
         </div>
 
-        <div class="inputBx">
+        <!-- Form -->
+        <div class="form-fields">
+          <div class="input-group">
+            <q-icon name="person" class="input-icon" />
+            <input v-model="store.formregister.username" type="text" placeholder="Username" />
+          </div>
+
+          <div class="input-group">
+            <q-icon name="lock" class="input-icon" />
+            <input v-model="store.formregister.password" type="password" placeholder="Password" />
+          </div>
+
+          <div class="input-group">
+            <q-icon name="lock_reset" class="input-icon" />
+            <input
+              v-model="store.formregister.confirmpassword"
+              type="password"
+              placeholder="Masukkan Ulang Password"
+            />
+          </div>
+        </div>
+
+        <!-- Button -->
+        <div class="action-buttons">
           <q-btn
             label="Register"
             type="submit"
-            color="primary"
-            glossy
+            unelevated
             rounded
-            class="full-width"
+            icon="how_to_reg"
+            class="btn-register full-width"
             :loading="store.loadingregister"
             :disable="store.loadingregister"
           />
         </div>
-        <div class="links text-white">Selamat Datang Di Sistem Informasi Cluster Serayu</div>
+
+        <div class="welcome-text">Selamat Datang Di Sistem Informasi Cluster Serayu</div>
       </div>
     </q-form>
   </q-page>
@@ -85,23 +114,71 @@ async function onSubmit() {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Quicksand', sans-serif;
-}
-
-.q-page {
+.register-page {
   position: relative;
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Rain Animation */
+/* ORBS */
+.bg-orbs {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: float 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 280px;
+  height: 280px;
+  background: #10b981;
+  top: -80px;
+  right: -60px;
+}
+
+.orb-2 {
+  width: 220px;
+  height: 220px;
+  background: #6366f1;
+  bottom: -60px;
+  left: -40px;
+}
+
+.orb-3 {
+  width: 180px;
+  height: 180px;
+  background: #06b6d4;
+  top: 40%;
+  left: 20%;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.05);
+  }
+}
+
+/* RAIN */
 .rain {
   position: absolute;
   width: 100%;
@@ -117,60 +194,9 @@ async function onSubmit() {
   top: -100px;
   width: 2px;
   height: 15px;
-  background: rgba(214, 218, 218, 0.6);
+  background: rgba(148, 163, 184, 0.4);
   animation: fall linear infinite;
   border-radius: 50%;
-}
-
-.rain i:nth-child(1) {
-  left: 5%;
-  animation-duration: 1s;
-  animation-delay: 0s;
-}
-.rain i:nth-child(2) {
-  left: 15%;
-  animation-duration: 1.2s;
-  animation-delay: 0.3s;
-}
-.rain i:nth-child(3) {
-  left: 25%;
-  animation-duration: 0.9s;
-  animation-delay: 0.5s;
-}
-.rain i:nth-child(4) {
-  left: 35%;
-  animation-duration: 1.1s;
-  animation-delay: 0.2s;
-}
-.rain i:nth-child(5) {
-  left: 45%;
-  animation-duration: 1.3s;
-  animation-delay: 0.7s;
-}
-.rain i:nth-child(6) {
-  left: 55%;
-  animation-duration: 0.8s;
-  animation-delay: 0.4s;
-}
-.rain i:nth-child(7) {
-  left: 65%;
-  animation-duration: 1.4s;
-  animation-delay: 0.1s;
-}
-.rain i:nth-child(8) {
-  left: 75%;
-  animation-duration: 1.2s;
-  animation-delay: 0.6s;
-}
-.rain i:nth-child(9) {
-  left: 85%;
-  animation-duration: 1s;
-  animation-delay: 0.8s;
-}
-.rain i:nth-child(10) {
-  left: 95%;
-  animation-duration: 1.3s;
-  animation-delay: 0.3s;
 }
 
 @keyframes fall {
@@ -187,61 +213,134 @@ async function onSubmit() {
   }
 }
 
-/* Login Form */
-.login-wrapper {
+/* WRAPPER */
+.register-wrapper {
   position: relative;
   z-index: 2;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
 }
 
-.login {
-  position: relative;
-  width: 300px;
+.register-card {
+  width: 360px;
+  max-width: 92vw;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 30px;
-  border-radius: 20px;
+  gap: 24px;
+  padding: 36px 28px;
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.6);
 }
 
-.login h2 {
-  font-size: 2em;
-  color: #fff;
+/* BRAND */
+.brand-section {
   text-align: center;
 }
 
-.inputBx {
-  position: relative;
-  width: 100%;
+.brand-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  color: white;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
 }
 
-.inputBx input {
+.brand-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.3;
+}
+
+.brand-subtitle {
+  font-size: 0.85em;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* FORM */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: 0.25s ease;
+}
+
+.input-group:focus-within {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.input-icon {
+  color: #64748b;
+  font-size: 20px;
+}
+
+.input-group input {
+  flex: 1;
   width: 100%;
-  padding: 12px 20px;
+  padding: 14px 12px;
   background: transparent;
-  border: 2px solid #fff;
-  border-radius: 40px;
-  font-size: 1.2em;
-  color: #fff;
+  border: none;
   outline: none;
+  color: #f1f5f9;
+  font-size: 1em;
 }
 
-.inputBx input::placeholder {
-  color: rgba(255, 255, 255, 0.75);
+.input-group input::placeholder {
+  color: #64748b;
 }
 
-.inputBx .q-btn {
-  width: 100%;
+/* BUTTON */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.links {
+.btn-register {
+  background: linear-gradient(135deg, #10b981, #06b6d4) !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 12px 0;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  transition: 0.25s ease;
+}
+
+.btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.45);
+}
+
+/* FOOTER */
+.welcome-text {
   text-align: center;
-  color: #fff;
-  font-size: 0.9em;
+  color: #64748b;
+  font-size: 0.8em;
+  line-height: 1.5;
 }
 </style>

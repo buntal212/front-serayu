@@ -21,18 +21,14 @@
             <q-icon name="person_add" size="36px" />
           </div>
           <h2 class="brand-title">Registrasi<br />Warga</h2>
-          <p class="brand-subtitle">Perum Bengawan Indah</p>
+          <p class="brand-subtitle">Cluster Serayu</p>
         </div>
 
         <!-- Input -->
         <div class="form-fields">
           <div class="input-group">
             <q-icon name="badge" class="input-icon" />
-            <input
-              v-model="nokk"
-              type="text"
-              placeholder="Masukkan No KK"
-            />
+            <input v-model="nokk" type="text" placeholder="Masukkan ID Warga" />
           </div>
         </div>
 
@@ -58,9 +54,7 @@
           />
         </div>
 
-        <div class="welcome-text">
-          Masukkan Nomor Kartu Keluarga untuk melanjutkan pendaftaran
-        </div>
+        <div class="welcome-text">Masukkan Nomor ID Warga untuk melanjutkan pendaftaran</div>
       </div>
     </q-form>
   </q-page>
@@ -181,8 +175,13 @@ async function onSubmit() {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-30px) scale(1.05); }
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.05);
+  }
 }
 
 /* ============================
@@ -209,9 +208,17 @@ async function onSubmit() {
 }
 
 @keyframes fall {
-  0% { top: -100px; opacity: 0; }
-  30% { opacity: 1; }
-  100% { top: 100vh; opacity: 0; }
+  0% {
+    top: -100px;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+  }
 }
 
 /* ============================
