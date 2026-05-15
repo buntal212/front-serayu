@@ -145,6 +145,9 @@ onMounted(async () => {
   const token = await requestFcmToken()
   storenotif.getUnreadCount()
   console.log('🔥 TOKEN FINAL:', token)
+  if (token) {
+    await storenotif.simpantoken(token)
+  }
 })
 </script>
 
