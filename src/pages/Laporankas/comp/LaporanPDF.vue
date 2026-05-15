@@ -2,13 +2,10 @@
   <div class="laporan-print">
     <!-- Header -->
 
-    <KopDokumen :namadokumen="namadokumen" />
+    <KopDokumen :namadokumen="namadokumen" :bulan="bulanx" :tahun="tahun" />
     <div class="laporan-header">
       <div class="text-center">
-        <div class="text-caption">
-          Bulan {{ getNamaBulan(bulanx) }} {{ tahun }}<br />
-          Dicetak: {{ formatTanggal(new Date()) }}
-        </div>
+        <div class="text-caption">Dicetak: {{ formatTanggal(new Date()) }}</div>
       </div>
     </div>
 
@@ -28,7 +25,7 @@
         <tr class="saldo-awal">
           <td>{{ formatTanggal(tanggaltutupsaldo) }}</td>
           <td colspan="3"></td>
-          <td>{{ formatDouble(saldoawal) }}</td>
+          <td>{{ formatDouble(props.saldoawal) }}</td>
           <td>SALDO AWAL</td>
         </tr>
         <tr v-for="(item, index) in items" :key="item.notrans || index">
@@ -83,7 +80,7 @@
 <script setup>
 import KopDokumen from 'src/components/KopDokumen.vue'
 import { formatDouble } from 'src/modules/formatter'
-import { getNamaBulan } from 'src/utils/dateHelper'
+// import { getNamaBulan } from 'src/utils/dateHelper'
 import { computed } from 'vue'
 
 const namadokumen = 'Laporan Kas'
@@ -91,7 +88,10 @@ const props = defineProps({
   items: Array,
   bulanx: Number,
   tahun: Number,
-  saldoawal: Number,
+  saldoawal: {
+    type: Number,
+    default: 0,
+  },
   tanggaltutupsaldo: String,
   qrKetua: String,
   qrBendahara: String,
@@ -104,7 +104,7 @@ const totalKeluar = computed(() => {
   return props.items.reduce((acc, item) => acc + (item.jenis === 'keluar' ? item.nominal : 0), 0)
 })
 const saldoAkhir = computed(() => {
-  return props.saldoawal + totalMasuk.value - totalKeluar.value
+  return Number(props.saldoawal) + totalMasuk.value - totalKeluar.value
 })
 
 function formatTanggal(tanggal) {
@@ -121,128 +121,196 @@ function formatTanggal(tanggal) {
 </script>
 
 <style scoped>
-/* Container */
+/* =========================
+   CONTAINER
+========================= */
 .laporan-print {
   background: #ffffff;
-  color: #000;
-  padding: 16px;
-  font-family: Arial, sans-serif;
+  color: #111827;
+  padding: 24px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
-/* Header */
+/* =========================
+   HEADER
+========================= */
 .laporan-header {
-  border-bottom: 2px solid #000;
-  padding-bottom: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 3px solid #111827;
 }
 
-.text-h4 {
-  font-size: 22px;
-}
-
-.text-subtitle {
-  font-size: 14px;
-  margin-top: 4px;
+.text-center {
+  text-align: center;
 }
 
 .text-caption {
   font-size: 12px;
-  margin-top: 2px;
-  opacity: 0.8;
+  color: #4b5563;
+  margin-top: 4px;
+  line-height: 1.6;
 }
 
-.text-bold {
-  font-weight: bold;
-}
-
-/* Table */
+/* =========================
+   TABLE
+========================= */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
-}
-
-th,
-td {
-  border: 1px solid #000;
-  padding: 6px 8px;
-  text-align: center;
+  table-layout: fixed;
 }
 
 th {
-  background: #f0f0f0;
-  font-weight: bold;
+  background: #1f2937;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 10px 8px;
+  border: 1px solid #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
-/* Warna Masuk / Keluar */
+td {
+  border: 1px solid #d1d5db;
+  padding: 8px;
+  font-size: 11px;
+  vertical-align: middle;
+}
+
+/* =========================
+   COLUMN ALIGN
+========================= */
+td:nth-child(1),
+td:nth-child(2) {
+  text-align: center;
+}
+
+td:nth-child(3),
+td:nth-child(4),
+td:nth-child(5) {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+}
+
+td:nth-child(6) {
+  text-align: left;
+}
+
+/* =========================
+   ROW STRIPING
+========================= */
+tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+/* =========================
+   SALDO AWAL
+========================= */
+.saldo-awal {
+  background: #e5e7eb !important;
+  font-weight: 700;
+}
+
+.saldo-awal td {
+  border-top: 2px solid #6b7280;
+}
+
+/* =========================
+   SALDO AKHIR
+========================= */
+.saldo-akhir {
+  background: #dbeafe !important;
+  font-weight: 700;
+}
+
+.saldo-akhir td {
+  border-top: 2px solid #2563eb;
+  font-size: 12px;
+}
+
+/* =========================
+   TEXT COLOR
+========================= */
 .masuk {
-  color: #008000; /* hijau */
-  font-weight: bold;
+  color: #047857;
+  font-weight: 700;
 }
 
 .keluar {
-  color: #c00000; /* merah */
-  font-weight: bold;
+  color: #b91c1c;
+  font-weight: 700;
 }
 
-/* Striping ringan */
-tbody tr:nth-child(odd) {
-  background: #fff;
-}
-tbody tr:nth-child(even) {
-  background: #f9f9f9;
+/* =========================
+   TTD
+========================= */
+.ttd-wrapper {
+  margin-top: 50px;
 }
 
-/* Print optimization */
+.ttd-table {
+  width: 100%;
+  border: none;
+}
+
+.ttd-table td {
+  border: none;
+}
+
+.ttd-col {
+  width: 50%;
+  text-align: center;
+  vertical-align: top;
+  font-size: 12px;
+}
+
+.qr-box {
+  margin: 14px 0;
+}
+
+.qr-box img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* =========================
+   PRINT
+========================= */
 @media print {
   .laporan-print {
     padding: 0;
   }
-  table,
-  th,
-  td {
-    border: 1px solid #000;
-    font-size: 12pt;
+
+  table {
+    page-break-inside: auto;
   }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
   th {
-    background: #eee;
+    background: #1f2937 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact;
   }
-}
 
-/* Saldo Awal */
-.saldo-awal {
-  background: #e0e0e0;
-  font-weight: bold;
-  color: #000;
-}
-
-/* Saldo Akhir */
-.saldo-akhir {
-  background: #d0d0d0;
-  font-weight: bold;
-  color: #000;
-  border-top: 2px solid #000;
-}
-
-/* Text align kanan untuk angka */
-.text-right {
-  text-align: right;
-  padding-right: 8px;
-}
-.ttd-wrapper {
-  page-break-before: always; /* 🔥 INI KUNCINYA */
-  break-before: page;
-  margin-top: 20mm;
-}
-.qr-box {
-  margin-top: 12px;
-  text-align: center;
-}
-
-.qr-box img {
-  width: 120px;
-  height: 120px;
-  display: block;
-  margin: 12px auto;
+  .saldo-awal,
+  .saldo-akhir {
+    -webkit-print-color-adjust: exact;
+  }
 }
 </style>

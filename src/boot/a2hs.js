@@ -1,9 +1,19 @@
-import { boot } from 'quasar/wrappers'
+import { ref } from 'vue'
 
-export default boot(() => {
+export const deferredPrompt = ref(null)
+export const showInstallDialog = ref(false)
+
+export default () => {
   window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault()
     console.log('🔥 beforeinstallprompt fired!')
-    window.deferredPrompt = e
+
+    // hentikan banner bawaan chrome
+    e.preventDefault()
+
+    // simpan event
+    deferredPrompt.value = e
+
+    // tampilkan dialog custom
+    showInstallDialog.value = true
   })
-})
+}

@@ -1,21 +1,31 @@
 <template>
-  <q-page class="dashboard-bg">
-    <!-- Judul dan search -->
-    <div class="q-mb-md">
-      <div class="text-h5 text-white q-mb-sm">
-        Data Pembayaran Iuran Bulan
-        <q-btn
-          glossy
-          round
-          color="red"
-          icon="add"
-          size="sm"
-          push
-          @click="emits('add')"
-          unelevated
-        />
+  <q-page class="dashboard-page">
+    <!-- Animated background orbs -->
+    <div class="bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <div class="dashboard-content">
+      <!-- Header -->
+      <div class="glass-card">
+        <div class="header-row">
+          <q-btn flat dense icon="arrow_back" color="white" @click="goHome" class="btn-back" />
+          <div class="section-label" style="margin-bottom:0">Data Pembayaran Iuran Bulan</div>
+          <q-btn
+            round
+            dense
+            icon="add"
+            size="sm"
+            class="add-btn"
+            @click="emits('add')"
+          />
+        </div>
       </div>
-      <div class="row items-center q-gutter-sm">
+
+      <!-- Search & Filter -->
+      <div class="glass-card">
         <q-input
           dense
           filled
@@ -25,78 +35,81 @@
           clearable
           @clear="search = ''"
           @update:model-value="store.getlist()"
-          :style="{ background: 'white', color: '#000', borderRadius: '8px' }"
+          dark
         >
           <template #append>
-            <q-icon name="search" />
+            <q-icon name="search" color="grey-5" />
           </template>
         </q-input>
-      </div>
-      <div class="row q-mt-xs q-gutter-xs">
-        <div class="col-7">
-          <q-select
-            v-model="store.params.bulan"
-            round
-            dense
-            outlined
-            label="Bulan"
-            :options="props.bulan"
-            option-label="nama"
-            option-value="kode"
-            emit-value
-            map-options
-            :disable="store.loading"
-            @update:model-value="store.getlist()"
-            class="search-input select-white"
-          />
-        </div>
-        <div class="col-4">
-          <q-select
-            v-model="store.params.tahun"
-            round
-            dense
-            outlined
-            label="Tahun"
-            :options="tahunOptions"
-            option-label="nama"
-            option-value="id"
-            emit-value
-            map-options
-            :disable="store.loading"
-            @update:model-value="store.getlist()"
-            class="search-input select-white"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- Grid warga -->
-    <div class="warga-grid">
-      <template v-if="store.loading">
-        <SkeletonCard v-for="n in 6" :key="'skeleton-' + n" />
-      </template>
-      <template v-else>
-        <q-card v-for="w in store.items" :key="w.id" flat bordered class="warga-card q-pa-md">
-          <div class="warga-name">{{ w.nama }}</div>
-          <div class="warga-email">
-            Pembayaran Bulan: {{ getNamaBulan(w?.bulan) }} {{ w?.tahun }}
+        <div class="row q-mt-sm q-gutter-sm">
+          <div class="col">
+            <q-select
+              v-model="store.params.bulan"
+              dense
+              outlined
+              label="Bulan"
+              :options="props.bulan"
+              option-label="nama"
+              option-value="kode"
+              emit-value
+              map-options
+              :disable="store.loading"
+              @update:model-value="store.getlist()"
+              class="filter-input"
+              dark
+            />
           </div>
-          <div class="warga-email">Cara Bayar: {{ w.cara_bayar }}</div>
-          <div class="warga-nik">Iuran: {{ formatDouble(w.nominal) || '-' }}</div>
-          <div class="warga-email">Tgl Input: {{ humanDate(w.created_at) }}</div>
-          <!-- <div class="warga-username">Username: {{ w.username }}</div> -->
-        </q-card>
-      </template>
+          <div class="col">
+            <q-select
+              v-model="store.params.tahun"
+              dense
+              outlined
+              label="Tahun"
+              :options="tahunOptions"
+              option-label="nama"
+              option-value="id"
+              emit-value
+              map-options
+              :disable="store.loading"
+              @update:model-value="store.getlist()"
+              class="filter-input"
+              dark
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Cards -->
+      <div v-if="store.loading" class="card-grid">
+        <SkeletonCard v-for="n in 6" :key="'skeleton-' + n" />
+      </div>
+      <div v-else class="card-grid">
+        <div v-for="w in store.items" :key="w.id" class="glass-card data-card" @click="emits('edit', w)">
+          <div class="card-name">{{ w.nama }}</div>
+          <div class="card-info">
+            <q-icon name="event" size="16px" class="info-icon" />
+            <span>{{ getNamaBulan(w?.bulan) }} {{ w?.tahun }}</span>
+          </div>
+          <div class="card-info">
+            <q-icon name="payments" size="16px" class="info-icon" />
+            <span>Cara Bayar: {{ w.cara_bayar }}</span>
+          </div>
+          <div class="card-amount">{{ formatDouble(w.nominal) || '-' }}</div>
+          <div class="card-date">{{ humanDate(w.created_at) }}</div>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import { formatDouble, humanDate } from 'src/modules/formatter'
 import SkeletonCard from 'src/pages/componen/SkeletonCard.vue'
 import { usePembayaranIuranBulananStore } from 'src/stores/iuranbulanan/iuranbulanan'
 import { getNamaBulan } from 'src/utils/dateHelper'
 
+const router = useRouter()
 const store = usePembayaranIuranBulananStore()
 const emits = defineEmits(['add', 'edit'])
 
@@ -106,90 +119,228 @@ const props = defineProps({
     default: null,
   },
 })
+
 const tahunOptions = [store.form.tahun - 1, store.form.tahun, store.form.tahun + 1]
+
+function goHome() {
+  router.push('/')
+}
 </script>
 
 <style scoped>
-.dashboard-bg {
-  background: linear-gradient(145deg, #0d0d0d, #1b1b1f, #151923);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.dashboard-page {
+  position: relative;
   min-height: 100vh;
-  padding: 18px;
+  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
   overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  padding-bottom: 32px;
 }
 
-/* SEARCH INPUT */
+.bg-orbs {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: float 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 280px;
+  height: 280px;
+  background: #6366f1;
+  top: -60px;
+  left: -40px;
+}
+
+.orb-2 {
+  width: 220px;
+  height: 220px;
+  background: #0ea5e9;
+  bottom: -40px;
+  right: -30px;
+  animation-delay: -3s;
+}
+
+.orb-3 {
+  width: 180px;
+  height: 180px;
+  background: #8b5cf6;
+  top: 50%;
+  left: 60%;
+  animation-delay: -5s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+
+.dashboard-content {
+  position: relative;
+  z-index: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.glass-card {
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 40px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  animation: cardSlideIn 0.5s ease-out both;
+}
+
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-back {
+  flex-shrink: 0;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  margin-left: auto;
+}
+
+.section-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 0.3px;
+}
+
+/* Search */
 .search-input {
   width: 100%;
-  margin-bottom: 10px;
 }
 
 .search-input :deep(.q-field__control) {
   background: rgba(255, 255, 255, 0.06);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  transition: 0.25s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .search-input :deep(.q-field__control:hover),
 .search-input :deep(.q-field--focused .q-field__control) {
+  border-color: #6366f1;
   background: rgba(255, 255, 255, 0.1);
-  border-color: #ff4444;
 }
 
-/* GRID KARTU */
-.warga-grid {
+.search-input :deep(.q-field__native) {
+  color: #e2e8f0;
+}
+
+.search-input :deep(.q-field__label) {
+  color: #64748b;
+}
+
+/* Filter selects */
+.filter-input :deep(.q-field__control) {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-input :deep(.q-field__control:hover),
+.filter-input :deep(.q-field--focused .q-field__control) {
+  border-color: #6366f1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.filter-input :deep(.q-field__native),
+.filter-input :deep(.q-field__input) {
+  color: #e2e8f0;
+}
+
+.filter-input :deep(.q-field__label) {
+  color: #64748b;
+}
+
+/* Card grid */
+.card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  margin-top: 18px;
+  grid-template-columns: 1fr;
+  gap: 14px;
 }
 
-/* CARD WARGA */
-.warga-card {
-  border-radius: 18px;
-  padding: 18px;
-  background: rgba(30, 30, 30, 0.55);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
-  color: #f5f5f5;
+@media (min-width: 480px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.data-card {
   cursor: pointer;
-
-  transform: translateY(0);
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
+  transition: all 0.25s ease;
 }
 
-.warga-card:hover {
-  transform: translateY(-8px);
-  background: rgba(50, 50, 50, 0.65);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+.data-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
 }
 
-.warga-name {
-  font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 1.2rem;
+.card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 8px;
 }
 
-.warga-nik {
-  font-size: 0.95rem;
-  opacity: 0.85;
+.card-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 4px;
 }
 
-.select-white :deep(.q-field__control) {
-  background: rgba(255, 255, 255, 1) !important;
-  color: #000 !important;
-  border-radius: 8px;
+.info-icon {
+  color: #6366f1;
 }
 
-.select-white :deep(.q-field__native) {
-  color: #000 !important;
+.card-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #a5b4fc;
+  margin-top: 8px;
 }
 
-.select-white :deep(.q-field__label) {
-  color: #444 !important;
+.card-date {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
 }
 </style>

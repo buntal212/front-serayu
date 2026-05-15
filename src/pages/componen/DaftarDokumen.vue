@@ -1,73 +1,67 @@
 <template>
-  <q-card flat bordered class="form-card q-pa-lg q-mt-md">
-    <div class="text-h6 q-mb-md">Dokumen Anggota Keluarga</div>
-    <!-- <pre>{{ store.itemsrinci }}</pre> -->
-    <div class="row q-col-gutter-md">
-      <div v-for="(x, index) in store.itemsrinci" :key="index" class="col-6 col-sm-4 col-md-3">
-        <q-card class="img-card q-pa-sm">
+  <div class="glass-card dokumen-section">
+    <div class="section-label">Dokumen Anggota Keluarga</div>
+
+    <div class="dokumen-grid">
+      <div v-for="(x, index) in store.itemsrinci" :key="index" class="dokumen-item">
+        <div class="dokumen-img-wrap" @click="lihatFoto(x.foto)">
           <q-img
             :src="x.foto"
             ratio="1"
-            class="rounded-borders"
-            spinner-color="red"
-            spinner-size="35px"
-            @click="lihatFoto(x.foto)"
+            class="dokumen-img"
+            spinner-color="#6366f1"
+            spinner-size="30px"
           />
-
-          <div class="text-center q-mt-sm text-black text-subtitle2 ellipsis">
-            {{ x.jenisdok === 'Kartu Keluarga' ? 'Dokumen KK' : x.nama }}
-          </div>
-
-          <div class="row justify-around q-mt-sm">
-            <q-btn dense flat color="light-blue" icon="visibility" @click="downloadPdf(x.foto)" />
-
-            <q-btn
-              dense
-              flat
-              color="red"
-              icon="delete"
-              @click.stop="emits('hapus', x)"
-              :loading="store.loadinghapusrinci && store.formrinci.id === x.id"
-            />
-          </div>
-        </q-card>
+        </div>
+        <div class="dokumen-name">
+          {{ x.jenisdok === 'Kartu Keluarga' ? 'Dokumen KK' : x.nama }}
+        </div>
+        <div class="dokumen-actions">
+          <q-btn dense flat color="light-blue" icon="visibility" @click="downloadPdf(x.foto)" />
+          <q-btn
+            dense
+            flat
+            color="red"
+            icon="delete"
+            @click.stop="emits('hapus', x)"
+            :loading="store.loadinghapusrinci && store.formrinci.id === x.id"
+          />
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Dialog untuk foto besar -->
-    <q-dialog v-model="dialogFoto">
-      <q-card class="bg-dark text-white" style="width: 90vw; max-width: 700px; border-radius: 16px">
-        <!-- Header -->
-        <div class="row items-center justify-between q-pa-sm">
-          <div class="text-h6">Preview Dokumen</div>
-          <q-btn dense flat round icon="close" color="white" v-close-popup />
-        </div>
+  <!-- Dialog foto besar -->
+  <q-dialog v-model="dialogFoto">
+    <q-card class="preview-card">
+      <div class="preview-header">
+        <div class="preview-title">Preview Dokumen</div>
+        <q-btn dense flat round icon="close" color="white" v-close-popup />
+      </div>
+      <q-img
+        :src="fotoTerpilih"
+        ratio="1"
+        class="preview-img"
+        spinner-color="#6366f1"
+        spinner-size="30px"
+      />
+      <div class="preview-footer">
+        <q-btn flat label="Tutup" color="#f87171" v-close-popup class="close-btn" />
+      </div>
+    </q-card>
+  </q-dialog>
 
-        <!-- Foto besar -->
-        <q-img
-          :src="fotoTerpilih"
-          ratio="1"
-          class="rounded-borders"
-          spinner-color="red"
-          style="max-height: 70vh; object-fit: contain"
-        />
-
-        <!-- Footer -->
-        <q-card-actions align="right" class="q-pa-sm">
-          <q-btn flat label="Tutup" color="red" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </q-card>
+  <!-- Dialog tambah dokumen -->
   <q-dialog v-model="store.dialog">
     <q-card class="form-card">
-      <q-card-section>
-        <div class="text-h6">Tambahkan Dokumen Anggota Keluarga</div>
-      </q-card-section>
+      <div class="form-header">
+        <div class="form-title">Tambahkan Dokumen Anggota Keluarga</div>
+      </div>
 
-      <q-separator />
+      <q-separator style="border-color: rgba(255,255,255,0.06)" />
+
       <q-form @submit="simpanrinci">
-        <q-card-section style="max-height: 50vh" class="scroll">
+        <div class="form-body">
           <q-select
             v-model="store.formrinci.jenis"
             label="Jenis Dokumen"
@@ -108,18 +102,19 @@
             @added="onFileAdded"
             @rejected="onRejected"
           />
-        </q-card-section>
+        </div>
 
-        <q-separator />
+        <q-separator style="border-color: rgba(255,255,255,0.06)" />
 
-        <q-card-actions align="right">
-          <q-btn dense label="Cancel" color="primary" v-close-popup />
-          <q-btn dense label="Simpan" color="red" type="submit" :loading="store.loadingrinci" />
-        </q-card-actions>
+        <div class="form-footer">
+          <q-btn dense label="Cancel" color="grey-6" flat v-close-popup />
+          <q-btn dense label="Simpan" color="#818cf8" type="submit" :loading="store.loadingrinci" class="save-btn" />
+        </div>
       </q-form>
     </q-card>
   </q-dialog>
 </template>
+
 <script setup>
 import { useWargaStore } from 'src/stores/Warga/warga'
 import { ref } from 'vue'
@@ -148,24 +143,191 @@ function simpanrinci() {
 
 function onFileAdded(files) {
   store.uploadedFiles = files[0]
-  console.log('files', store.uploadedFiles)
 }
 
 function onRejected() {
-  // Notify plugin needs to be installed
-  // https://v2.quasar.dev/quasar-plugins/notify#Installation
   $q.notify({
     type: 'negative',
     message: `File Harus Berformat jpg atau jpeg dan Maksimal 512 Kb`,
   })
 }
 </script>
+
 <style scoped>
-.form-card {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Glass card */
+.glass-card {
   border-radius: 20px;
-  background: rgba(30, 30, 30, 0.55);
-  backdrop-filter: blur(15px);
-  box-shadow: 0 4px 22px rgba(0, 0, 0, 0.8);
-  color: #fff;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  animation: cardSlideIn 0.5s ease-out 0.15s both;
+  font-family: 'Inter', sans-serif;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+}
+
+/* Dokumen grid */
+.dokumen-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.dokumen-item {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px;
+  transition: all 0.25s ease;
+}
+
+.dokumen-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.dokumen-img-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.dokumen-img {
+  border-radius: 10px;
+}
+
+.dokumen-name {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dokumen-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Preview dialog */
+.preview-card {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px !important;
+  width: 90vw;
+  max-width: 700px;
+  color: #e2e8f0;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.preview-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.preview-img {
+  border-radius: 12px;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.preview-footer {
+  padding: 8px 16px 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-btn {
+  color: #f87171 !important;
+}
+
+/* Form dialog */
+.form-card {
+  border-radius: 20px !important;
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+}
+
+.form-header {
+  padding: 16px 20px 12px;
+}
+
+.form-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.form-body {
+  padding: 16px 20px;
+  max-height: 50vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-input {
+  margin-bottom: 4px;
+}
+
+.form-footer {
+  padding: 12px 20px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.save-btn {
+  background: rgba(99, 102, 241, 0.15) !important;
+  color: #818cf8 !important;
+}
+
+/* Responsive */
+@media (min-width: 480px) {
+  .dokumen-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 </style>

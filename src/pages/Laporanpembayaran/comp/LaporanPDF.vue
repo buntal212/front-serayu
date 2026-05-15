@@ -1,61 +1,96 @@
 <template>
   <div class="pdf-page">
-    <!-- Judul -->
+    <!-- HEADER -->
     <KopDokumen :namadokumen="namadokumen" />
 
-    <div class="text-center q-mb-sm">
-      <div class="text-caption">
-        Bulan {{ getNamaBulan(bulanx) }} {{ tahun }}<br />
-        Dicetak: {{ formatTanggal(new Date()) }}
-      </div>
+    <!-- TITLE -->
+    <div class="report-header">
+      <div class="report-title">LAPORAN PEMBAYARAN IURAN</div>
+
+      <div class="report-subtitle">Bulan {{ getNamaBulan(bulanx) }} {{ tahun }}</div>
+
+      <div class="report-date">Digenerete : {{ formatTanggal(new Date()) }}</div>
     </div>
 
-    <q-separator class="q-my-sm" />
+    <!-- TABLE -->
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th width="5%">No</th>
+          <th width="18%">No Trans</th>
+          <th width="20%">Nama</th>
+          <th width="15%">Bulan</th>
+          <th width="15%">Pembayaran</th>
+          <th width="12%">Nominal</th>
+          <th width="15%">Tanggal</th>
+        </tr>
+      </thead>
 
-    <!-- Daftar Data -->
-    <div
-      v-for="(item, index) in items"
-      :key="item.notrans || index"
-      class="q-mb-md q-pa-sm item-box"
-    >
-      <div class="row q-col-gutter-sm">
-        <div class="col-4">
-          <div><strong>Notrans:</strong> {{ item.notrans }}</div>
-          <div><strong>Nama:</strong> {{ item.nama }}</div>
-        </div>
+      <tbody>
+        <tr v-for="(item, index) in items" :key="item.notrans || index">
+          <td class="text-center">
+            {{ index + 1 }}
+          </td>
 
-        <div class="col-4">
-          <div><strong>Bulan Bayar:</strong> {{ getNamaBulan(item.bulan) }} {{ item.tahun }}</div>
-          <div><strong>Nominal:</strong> Rp. {{ formatDouble(item.nominal) }}</div>
-          <div><strong>Cara Bayar:</strong> {{ item.cara_bayar }}</div>
-        </div>
+          <td>
+            {{ item.notrans }}
+          </td>
 
-        <div class="col-4">
-          <div><strong>Keterangan:</strong> {{ item.keterangan }}</div>
-          <div><strong>Tanggal Bayar:</strong> {{ formatTanggal(item.created_at) }}</div>
-        </div>
-      </div>
+          <td>
+            <div class="nama-cell">
+              {{ item.nama }}
+            </div>
+
+            <div v-if="item.keterangan" class="ket-cell">
+              {{ item.keterangan }}
+            </div>
+          </td>
+
+          <td class="text-center">{{ getNamaBulan(item.bulan) }} {{ item.tahun }}</td>
+
+          <td class="text-center">
+            {{ item.cara_bayar }}
+          </td>
+
+          <td class="text-right nominal">Rp {{ formatDouble(item.nominal) }}</td>
+
+          <td class="text-center">
+            {{ formatTanggal(item.created_at) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- FOOTER -->
+    <div class="footer-info">
+      Total Data : <b>{{ items.length }}</b>
     </div>
 
-    <!-- TTD -->
+    <!-- SIGNATURE -->
     <table class="ttd-table">
       <tr>
         <td class="ttd-col">
-          Mengetahui,<br />
-          <b>Ketua</b>
+          <div class="ttd-city">Mengetahui,</div>
+
+          <div class="ttd-role">Ketua</div>
+
           <div class="qr-box">
             <img v-if="qrKetua" :src="qrKetua" />
           </div>
-          <b>( Ketua )</b>
+
+          <div class="ttd-name">( Ketua )</div>
         </td>
 
         <td class="ttd-col">
-          Dibuat oleh,<br />
-          <b>Bendahara</b>
+          <div class="ttd-city">Dibuat Oleh,</div>
+
+          <div class="ttd-role">Bendahara</div>
+
           <div class="qr-box">
             <img v-if="qrBendahara" :src="qrBendahara" />
           </div>
-          <b>( Bendahara )</b>
+
+          <div class="ttd-name">( Bendahara )</div>
         </td>
       </tr>
     </table>
@@ -74,13 +109,17 @@ defineProps({
   bulanx: Number,
   tahun: Number,
 })
+
 const namadokumen = 'Laporan Pembayaran Iuran'
+
 function formatTanggal(tanggal) {
   if (!tanggal) return '-'
+
   const date = new Date(tanggal)
+
   return date.toLocaleString('id-ID', {
     day: '2-digit',
-    month: 'long',
+    month: 'short',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
@@ -99,18 +138,119 @@ onMounted(async () => {
 <style scoped>
 .pdf-page {
   background: #ffffff;
-  color: #000000;
-  box-sizing: border-box;
+  color: #111827;
+  padding: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-.item-box {
-  border: 1px solid #ccc;
-  border-radius: 6px;
+/* ======================
+   HEADER
+====================== */
+
+.report-header {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
+
+.report-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #111827;
+}
+
+.report-subtitle {
+  font-size: 13px;
+  margin-top: 4px;
+  color: #374151;
+}
+
+.report-date {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ======================
+   TABLE
+====================== */
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.report-table thead th {
+  background: #1e293b;
+  color: #ffffff;
+  font-size: 11px;
+  padding: 10px 8px;
+  border: 1px solid #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.report-table tbody td {
+  border: 1px solid #d1d5db;
+  padding: 8px;
+  vertical-align: top;
+  font-size: 11px;
+}
+
+.report-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.nama-cell {
+  font-weight: 700;
+  color: #111827;
+}
+
+.ket-cell {
+  margin-top: 3px;
+  color: #6b7280;
+  font-size: 10px;
+  font-style: italic;
+}
+
+.nominal {
+  font-weight: 700;
+  color: #111827;
+}
+
+/* ======================
+   ALIGN
+====================== */
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* ======================
+   FOOTER INFO
+====================== */
+
+.footer-info {
+  margin-top: 14px;
+  font-size: 11px;
+  color: #374151;
+}
+
+/* ======================
+   SIGNATURE
+====================== */
 
 .ttd-table {
   width: 100%;
-  margin-top: 40px;
+  margin-top: 50px;
   border-collapse: collapse;
 }
 
@@ -120,10 +260,32 @@ onMounted(async () => {
   vertical-align: top;
 }
 
+.ttd-city {
+  font-size: 11px;
+  color: #374151;
+}
+
+.ttd-role {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.qr-box {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 .qr-box img {
   width: 80px;
   height: 80px;
-  margin: 8px auto;
-  display: block;
+  object-fit: contain;
+}
+
+.ttd-name {
+  font-weight: 700;
+  margin-top: 5px;
+  color: #111827;
 }
 </style>

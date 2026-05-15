@@ -1,20 +1,14 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- Header -->
-    <q-header elevated class="header-gradient">
+    <!-- <q-header elevated class="header-gradient">
       <q-toolbar>
-        <!-- Logo / Icon Kiri -->
         <q-btn flat dense round icon="home" @click="goHome" class="q-mr-sm" />
-
-        <!-- Judul Project -->
         <q-toolbar-title class="text-h6 text-white">
-          Sistem Informasi Perumahan Bengawan Indah
+          Sistem Informasi Cluster Serayu
         </q-toolbar-title>
-
-        <!-- Menu / Action kanan -->
-        <!-- <q-btn flat dense round icon="menu" @click="toggleDrawer" /> -->
       </q-toolbar>
-    </q-header>
+    </q-header> -->
 
     <!-- Drawer opsional -->
     <!-- <q-drawer v-model="drawerOpen" side="left" overlay>
@@ -64,7 +58,7 @@ onMounted(() => {
 
 // const toggleDrawer = () => (drawerOpen.value = !drawerOpen.value)
 // const navigate = (link) => router.push(link)
-const goHome = () => router.push('/')
+// const goHome = () => router.push('/')
 </script>
 
 <style scoped>

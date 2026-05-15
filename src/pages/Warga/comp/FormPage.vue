@@ -1,17 +1,19 @@
 <template>
-  <q-page class="dashboard-bg q-pa-md">
-    <!-- <div class="form-container"> -->
-    <q-card flat bordered class="form-card q-pa-lg">
-      <q-btn
-        flat
-        dense
-        icon="arrow_back"
-        label="Kembali"
-        class="btn-back q-mb-md"
-        @click="emits('back')"
-      />
+  <div class="form-page">
+    <!-- Form Card -->
+    <div class="glass-card form-section">
+      <div class="back-row">
+        <q-btn
+          flat
+          dense
+          icon="arrow_back"
+          label="Kembali"
+          class="btn-back"
+          @click="emits('back')"
+        />
+      </div>
 
-      <div class="text-h5 text-center text-white q-mb-md">Form Data Warga</div>
+      <div class="form-title">Form Data Warga</div>
 
       <q-form @submit="onSubmit">
         <q-input
@@ -32,51 +34,37 @@
           dark
           :rules="[(val) => !!val || 'Wajib diisi']"
         />
-        <div class="q-mt-lg column items-center q-gutter-sm">
-          <!-- <q-btn
-            label="Upload KK"
-            color="green"
-            glossy
-            class="btn-submit full-width"
-            @click="uploadkk"
-          /> -->
+        <div class="btn-group">
           <q-btn
             type="submit"
             label="Simpan"
-            color="red-7"
-            glossy
-            class="btn-submit full-width"
+            class="btn-save full-width"
             :loading="store.loading"
           />
-          <!-- <div v-if="store.form.id" class="q-mt-sm"> -->
           <q-btn
             v-if="store.form.id"
             label="Tambah Dokumen Anggota Keluarga"
-            color="primary"
-            glossy
-            class="btn-submit full-width"
+            class="btn-add full-width"
             @click="tambahanggota(localx?.name, store.form.nokk)"
           />
-          <!-- </div> -->
         </div>
       </q-form>
-    </q-card>
-    <div v-if="localx?.name === 'Programer'">
-      <DaftarDokumen @hapus="hapusrinci" :id_heder="Number(store.form.id)" />
-    </div>
-    <div v-else>
-      <q-card flat bordered class="form-card q-pa-lg q-mt-md">
-        <div class="text-h6 q-mb-md text-center" v-if="store.form.nokk === '3574030701890001'">
-          Akses Ditolak
-        </div>
-        <div v-else>
-          <DaftarDokumen @hapus="hapusrinci" :id_heder="store.form.id" />
-        </div>
-      </q-card>
     </div>
 
-    <!-- </div> -->
-  </q-page>
+    <!-- Documents section -->
+    <div v-if="localx?.name === 'Programer'" class="glass-card docs-section">
+      <DaftarDokumen @hapus="hapusrinci" :id_heder="Number(store.form.id)" />
+    </div>
+    <div v-else class="glass-card docs-section">
+      <div class="access-denied" v-if="store.form.nokk === '3574030701890001'">
+        <q-icon name="lock" size="32px" color="red-4" />
+        <span>Akses Ditolak</span>
+      </div>
+      <div v-else>
+        <DaftarDokumen @hapus="hapusrinci" :id_heder="store.form.id" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -103,7 +91,6 @@ function onSubmit() {
 }
 
 function tambahanggota(yangakses, yangdiakses) {
-  // store.formrinci.id_heder = ''
   if (yangdiakses === '' || yangdiakses === null) {
     notifError('Isi Dulu No KKnya...!!!')
   } else {
@@ -130,7 +117,7 @@ watch(
   () => store.resetUploaderKey,
   () => {
     if (uploaderRef.value) {
-      uploaderRef.value.reset() // ⬅️ Pemanggilan resmi RESET
+      uploaderRef.value.reset()
     }
   },
 )
@@ -149,17 +136,72 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.form-card {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.form-page {
+  padding: 16px;
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Glass card */
+.glass-card {
   border-radius: 20px;
-  background: rgba(30, 30, 30, 0.55);
-  backdrop-filter: blur(15px);
-  box-shadow: 0 4px 22px rgba(0, 0, 0, 0.8);
-  color: #fff;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.5);
+  animation: cardSlideIn 0.5s ease-out both;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form section */
+.form-section {
+  padding: 24px;
+}
+
+.back-row {
+  margin-bottom: 10px;
+}
+
+.btn-back {
+  color: #94a3b8;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
+
+.btn-back:hover {
+  color: #e2e8f0;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f1f5f9;
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Input */
 .form-input {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .form-input :deep(.q-field__control) {
@@ -169,22 +211,58 @@ onMounted(() => {
   transition: all 0.2s;
 }
 
-.form-input :deep(.q-field__control:hover),
+.form-input :deep(.q-field__control:hover) {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
 .form-input :deep(.q-field--focused .q-field__control) {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+  background: rgba(255, 255, 255, 0.06);
 }
 
-/* Button */
-.btn-submit {
-  border-radius: 14px;
-  padding: 8px 25px;
-  font-weight: bold;
+/* Buttons */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
 }
 
-.btn-reset {
+.btn-save {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
   border-radius: 14px;
-  padding: 8px 25px;
-  color: #bbb;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  border: none;
+}
+
+.btn-add {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border-radius: 14px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  border: none;
+}
+
+/* Documents section */
+.docs-section {
+  padding: 20px;
+  animation-delay: 0.15s;
+}
+
+.access-denied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  color: #f87171;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
 }
 </style>

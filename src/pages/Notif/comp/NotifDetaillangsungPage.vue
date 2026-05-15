@@ -88,7 +88,7 @@ const formatDate = (date) => new Date(date).toLocaleString('id-ID')
 
 // Fungsi tombol kembali
 const goHome = () => {
-  router.push('/') // route utama, jika belum login akan trigger auto logout
+  router.push('/notif') // route utama, jika belum login akan trigger auto logout
 }
 </script>
 

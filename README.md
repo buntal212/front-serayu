@@ -1,4 +1,4 @@
-# Sistem Informasi Perumahan Bengawan Indah (front-perumbix)
+# Sistem Informasi Cluster Serayu (front-serayu)
 
 A Quasar Project
 

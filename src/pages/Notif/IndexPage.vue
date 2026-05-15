@@ -1,29 +1,23 @@
 <template>
-  <q-page class="dashboard-bg">
-    <div class="container">
-      <div>
-        <ListPage v-if="isList" @open="bukanotif($event)" />
-        <NotifDetailPage v-else @back="isList = true" :data="datadetail" />
-      </div>
-    </div>
+  <q-page class="notif-index-page">
+    <ListPage @open="showDetail" />
   </q-page>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import ListPage from './comp/ListPage.vue'
-import NotifDetailPage from './comp/NotifDetailPage.vue'
-const isList = ref(true)
-const datadetail = ref(null)
 
-function bukanotif(val) {
-  datadetail.value = val
-  isList.value = false
+const router = useRouter()
+
+const showDetail = (notif) => {
+  router.push({ name: 'notif-detail', params: { id: notif.id } })
 }
 </script>
 
 <style scoped>
-.dashboard-bg {
-  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
+.notif-index-page {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  min-height: 100vh;
 }
 </style>

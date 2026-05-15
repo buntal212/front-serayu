@@ -11,6 +11,8 @@ import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { NetworkFirst, CacheFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 
+const CACHE_VERSION = 'v2'
+
 // ----------------------
 // Service Worker Setup
 // ----------------------
@@ -22,7 +24,16 @@ self.addEventListener('install', () => {
 })
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim())
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys.filter((key) => !key.includes(CACHE_VERSION)).map((key) => caches.delete(key)),
+        )
+      })
+      .then(() => clients.claim()),
+  )
 })
 
 // ----------------------
@@ -51,61 +62,102 @@ registerRoute(
 )
 
 // ----------------------
-// Cache API, images, fonts, scripts, styles
+// API CACHE
 // ----------------------
 registerRoute(
   ({ url }) => url.pathname.startsWith('/api/'),
   new NetworkFirst({
-    cacheName: 'api-cache',
+    cacheName: `api-cache-${CACHE_VERSION}`,
     networkTimeoutSeconds: 5,
-    plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 5 * 60 })],
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 5 * 60,
+      }),
+    ],
   }),
 )
 
+// ----------------------
+// IMAGE CACHE
+// ----------------------
 registerRoute(
   ({ request }) => request.destination === 'image',
   new CacheFirst({
-    cacheName: 'image-cache',
-    plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 })],
+    cacheName: `image-cache-${CACHE_VERSION}`,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 24 * 60 * 60,
+      }),
+    ],
   }),
 )
 
+// ----------------------
+// FONT CACHE
+// ----------------------
 registerRoute(
   ({ request, url }) =>
     request.destination === 'font' ||
     url.origin.includes('fonts.googleapis.com') ||
     url.origin.includes('fonts.gstatic.com'),
-  new CacheFirst({
-    cacheName: 'font-cache',
-    plugins: [new ExpirationPlugin({ maxEntries: 30, maxAgeSeconds: 365 * 24 * 60 * 60 })],
-  }),
-)
 
-registerRoute(
-  ({ request }) => request.destination === 'style' || request.destination === 'script',
-  new NetworkFirst({
-    cacheName: 'static-assets-cache',
-    plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 7 * 24 * 60 * 60 })],
+  new CacheFirst({
+    cacheName: `font-cache-${CACHE_VERSION}`,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 30,
+        maxAgeSeconds: 365 * 24 * 60 * 60,
+      }),
+    ],
   }),
 )
 
 // ----------------------
-// Push Notification
+// STATIC ASSET CACHE
+// ----------------------
+registerRoute(
+  ({ request }) => request.destination === 'style' || request.destination === 'script',
+
+  new NetworkFirst({
+    cacheName: `static-assets-cache-${CACHE_VERSION}`,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 7 * 24 * 60 * 60,
+      }),
+    ],
+  }),
+)
+
+// ----------------------
+// PUSH NOTIFICATION
 // ----------------------
 self.addEventListener('push', (event) => {
   if (!event.data) return
 
   let payload = {}
+
   try {
     payload = event.data.json()
   } catch {
-    payload = { data: { body: event.data.text(), title: 'Notifikasi' } }
+    payload = {
+      data: {
+        body: event.data.text(),
+        title: 'Notifikasi',
+      },
+    }
   }
 
   const data = payload.data || payload.notification || {}
+
   const title = data.title || 'Notifikasi'
   const body = data.body || ''
-  const notifData = { id: data.notrans || null }
+
+  const notifData = {
+    id: data.notrans || null,
+  }
 
   event.waitUntil(
     self.registration.showNotification(title, {
@@ -118,7 +170,7 @@ self.addEventListener('push', (event) => {
 })
 
 // ----------------------
-// Notification Click
+// NOTIFICATION CLICK
 // ----------------------
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
@@ -126,27 +178,33 @@ self.addEventListener('notificationclick', (event) => {
   const notifId = event.notification.data?.id
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Cek apakah sudah ada tab aplikasi
-      for (const client of clientList) {
-        if ('postMessage' in client) {
-          // Kirim pesan ke tab yang ada
-          client.postMessage({
-            type: 'OPEN_DETAIL',
-            id: notifId, // bisa null, nanti router buka /notif
-          })
-          return client.focus()
+    clients
+      .matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      })
+      .then((clientList) => {
+        for (const client of clientList) {
+          if ('postMessage' in client) {
+            client.postMessage({
+              type: 'OPEN_DETAIL',
+              id: notifId,
+            })
+
+            return client.focus()
+          }
         }
-      }
-      // Kalau belum ada tab → buka tab baru ke /notif
-      return clients.openWindow('/notif')
-    }),
+
+        return clients.openWindow('/notif')
+      }),
   )
 })
 
 // ----------------------
-// Skip Waiting from Client
+// SKIP WAITING
 // ----------------------
 self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting()
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
 })

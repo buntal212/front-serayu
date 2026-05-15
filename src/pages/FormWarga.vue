@@ -36,9 +36,7 @@
             :disable="store.loadingregister"
           />
         </div>
-        <div class="links text-white">
-          Selamat Datang Di Sistem Informasi Perumahan Bengawan Indah
-        </div>
+        <div class="links text-white">Selamat Datang Di Sistem Informasi Cluster Serayu</div>
       </div>
     </q-form>
   </q-page>

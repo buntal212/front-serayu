@@ -1,6 +1,5 @@
 <template>
-  <q-page class="dashboard-bg q-pa-md">
-    <!-- <div class="form-container"> -->
+  <div class="form-page q-pa-md">
     <q-card flat bordered class="form-card q-pa-lg">
       <q-btn
         flat
@@ -124,8 +123,7 @@
         </div>
       </q-form>
     </q-card>
-    <!-- </div> -->
-  </q-page>
+  </div>
 </template>
 
 <script setup>
@@ -207,11 +205,30 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.form-page {
+  padding: 16px;
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  z-index: 2;
+}
 .form-card {
   border-radius: 20px;
-  background: rgba(30, 30, 30, 0.55);
-  backdrop-filter: blur(15px);
-  box-shadow: 0 4px 22px rgba(0, 0, 0, 0.8);
+
+  background: rgba(15, 23, 42, 0.28);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 40px rgba(0, 0, 0, 0.35);
+
   color: #fff;
 }
 
@@ -221,28 +238,40 @@ onMounted(() => {
 }
 
 .form-input :deep(.q-field__control) {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(15, 23, 42, 0.5);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.2s;
 }
 
 .form-input :deep(.q-field__control:hover),
 .form-input :deep(.q-field--focused .q-field__control) {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(167, 139, 250, 0.3);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+}
+
+.form-input :deep(.q-field__label) {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-input :deep(.q-field__native),
+.form-input :deep(.q-field__input) {
+  color: #fff;
 }
 
 /* Button */
 .btn-submit {
   border-radius: 14px;
-  padding: 8px 25px;
-  font-weight: bold;
+  padding: 10px 30px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .btn-reset {
   border-radius: 14px;
-  padding: 8px 25px;
-  color: #bbb;
+  padding: 10px 30px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
 }
 </style>

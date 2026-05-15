@@ -70,6 +70,13 @@ onMounted(() => {
 
 <style scoped>
 .dashboard-bg {
-  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(99, 102, 241, 0.18), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.14), transparent 35%),
+    linear-gradient(180deg, #020617 0%, #000000 100%);
+}
+:deep(.q-page) {
+  background: transparent !important;
 }
 </style>

@@ -46,6 +46,7 @@ const routes = [
 
   {
     path: '/notiflangsung/:id',
+    name: 'notif-detail',
     component: () => import('pages/Notif/comp/NotifDetaillangsungPage.vue'),
     props: true,
   },

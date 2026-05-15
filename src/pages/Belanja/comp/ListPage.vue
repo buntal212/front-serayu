@@ -1,20 +1,24 @@
 <template>
-  <q-page class="dashboard-bg"
-    ><div class="q-mb-md">
-      <div class="text-h5 text-white q-mb-sm">
-        Data Belanja
-        <q-btn
-          glossy
-          round
-          color="red"
-          icon="add"
-          size="sm"
-          push
-          @click="emits('add')"
-          unelevated
-        />
+  <q-page class="dashboard-page">
+    <!-- Animated background orbs -->
+    <div class="bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <div class="dashboard-content">
+      <!-- Header -->
+      <div class="glass-card">
+        <div class="header-row">
+          <q-btn flat dense icon="arrow_back" color="white" @click="goHome" class="btn-back" />
+          <div class="section-label" style="margin-bottom: 0">Data Belanja</div>
+          <q-btn round dense icon="add" size="sm" class="add-btn" @click="emits('add')" />
+        </div>
       </div>
-      <div class="row items-center q-gutter-sm">
+
+      <!-- Search & Filter -->
+      <div class="glass-card">
         <q-input
           dense
           filled
@@ -24,95 +28,92 @@
           clearable
           @clear="search = ''"
           @update:model-value="store.getlist()"
-          :style="{ background: 'white', color: '#000', borderRadius: '8px' }"
+          dark
         >
           <template #append>
-            <q-icon name="search" />
+            <q-icon name="search" color="grey-5" />
           </template>
         </q-input>
-      </div>
-      <div class="row q-mt-xs q-gutter-xs">
-        <div class="col-7">
-          <q-select
-            v-model="store.params.bulan"
-            round
-            dense
-            outlined
-            label="Bulan"
-            :options="props.bulan"
-            option-label="nama"
-            option-value="kode"
-            emit-value
-            map-options
-            :disable="store.loading"
-            @update:model-value="store.getlist()"
-            class="search-input select-white"
-          />
+        <div class="row q-mt-sm q-gutter-sm">
+          <div class="col">
+            <q-select
+              v-model="store.params.bulan"
+              dense
+              outlined
+              label="Bulan"
+              :options="props.bulan"
+              option-label="nama"
+              option-value="kode"
+              emit-value
+              map-options
+              :disable="store.loading"
+              @update:model-value="store.getlist()"
+              class="filter-input"
+              dark
+            />
+          </div>
+          <div class="col">
+            <q-select
+              v-model="store.params.tahun"
+              dense
+              outlined
+              label="Tahun"
+              :options="tahunOptions"
+              option-label="nama"
+              option-value="id"
+              emit-value
+              map-options
+              :disable="store.loading"
+              @update:model-value="store.getlist()"
+              class="filter-input"
+              dark
+            />
+          </div>
         </div>
-        <div class="col-4">
-          <q-select
-            v-model="store.params.tahun"
-            round
-            dense
-            outlined
-            label="Tahun"
-            :options="tahunOptions"
-            option-label="nama"
-            option-value="id"
-            emit-value
-            map-options
-            :disable="store.loading"
-            @update:model-value="store.getlist()"
-            class="search-input select-white"
-          />
-        </div>
       </div>
-    </div>
-    <div class="warga-grid">
-      <template v-if="store.loading">
+
+      <!-- Data Cards -->
+      <div v-if="store.loading" class="card-grid">
         <SkeletonCard v-for="n in 6" :key="'skeleton-' + n" />
-      </template>
-      <template v-else>
-        <q-card
+      </div>
+      <div v-else class="card-grid">
+        <div
           v-for="(w, index) in store.items"
           :key="w.id || index"
-          flat
-          bordered
-          class="warga-card q-pa-md"
+          class="glass-card data-card"
           @click="emits('edit', w)"
         >
-          <div class="warga-name">{{ w.notrans }}</div>
-
-          <div class="warga-email">
-            <q-icon name="event" />
-            Tgl: {{ humanDate(w.tgl) }}
+          <div class="card-name">{{ w.notrans }}</div>
+          <div class="card-info">
+            <q-icon name="event" size="16px" class="info-icon" />
+            <span>Tgl: {{ humanDate(w.tgl) }}</span>
           </div>
-
-          <div class="warga-email">
-            <q-icon name="category" />
-            Jenis: {{ jenisbelanja(w.jenisbelanja) }}
+          <div class="card-info">
+            <q-icon name="category" size="16px" class="info-icon" />
+            <span>Jenis: {{ jenisbelanja(w.jenisbelanja) }}</span>
           </div>
-
-          <div class="warga-email">
-            <q-icon name="info" />
-            Ket: {{ w.keterangan }}
+          <div class="card-info">
+            <q-icon name="category" size="16px" class="info-icon" />
+            <span>Jenis Pembayaran: {{ w?.jenispembayaran }}</span>
           </div>
-
-          <div class="warga-email">
-            <q-icon name="payments" />
-            Total: {{ formatRp(w.totalbelanja) }}
+          <div class="card-info">
+            <q-icon name="info" size="16px" class="info-icon" />
+            <span>Ket: {{ w.keterangan }}</span>
           </div>
-        </q-card>
-      </template>
+          <div class="card-amount">{{ formatRp(w.totalbelanja) }}</div>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import { formatRp, humanDate } from 'src/modules/formatter'
 import SkeletonCard from 'src/pages/componen/SkeletonCard.vue'
 import { useBelanjaStore } from 'src/stores/Belanja/belanja'
 
+const router = useRouter()
 const store = useBelanjaStore()
 const emits = defineEmits(['add', 'edit'])
 
@@ -133,128 +134,233 @@ function jenisbelanja(val) {
   }
 }
 const tahunOptions = [store.form.tahun - 1, store.form.tahun, store.form.tahun + 1]
+
+function goHome() {
+  router.push('/')
+}
 </script>
 
 <style scoped>
-.dashboard-bg {
-  background: linear-gradient(145deg, #0d0d0d, #1b1b1f, #151923);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.dashboard-page {
+  position: relative;
   min-height: 100vh;
-  padding: 18px;
+  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
   overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  padding-bottom: 32px;
 }
 
-/* SEARCH INPUT */
+.bg-orbs {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: float 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 280px;
+  height: 280px;
+  background: #6366f1;
+  top: -60px;
+  left: -40px;
+}
+
+.orb-2 {
+  width: 220px;
+  height: 220px;
+  background: #0ea5e9;
+  bottom: -40px;
+  right: -30px;
+  animation-delay: -3s;
+}
+
+.orb-3 {
+  width: 180px;
+  height: 180px;
+  background: #8b5cf6;
+  top: 50%;
+  left: 60%;
+  animation-delay: -5s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.05);
+  }
+}
+
+.dashboard-content {
+  position: relative;
+  z-index: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.glass-card {
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  animation: cardSlideIn 0.5s ease-out both;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-back {
+  flex-shrink: 0;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  margin-left: auto;
+}
+
+.section-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 0.3px;
+}
+
+/* Search */
 .search-input {
   width: 100%;
-  margin-bottom: 10px;
 }
 
 .search-input :deep(.q-field__control) {
   background: rgba(255, 255, 255, 0.06);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  transition: 0.25s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .search-input :deep(.q-field__control:hover),
 .search-input :deep(.q-field--focused .q-field__control) {
+  border-color: #6366f1;
   background: rgba(255, 255, 255, 0.1);
-  border-color: #ff4444;
 }
 
-.dashboard-bg {
-  background: linear-gradient(145deg, #0b0b0c, #16171d, #0f121a);
-  min-height: 100vh;
-  padding: 18px;
-  overflow-x: hidden;
+.search-input :deep(.q-field__native) {
+  color: #e2e8f0;
 }
 
-/* SEARCH INPUT */
-.search-input :deep(.q-field__control) {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(6px);
-  transition: 0.25s ease;
+.search-input :deep(.q-field__label) {
+  color: #64748b;
 }
 
-.search-input :deep(.q-field__control:hover),
-.search-input :deep(.q-field--focused .q-field__control) {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: #ff5252;
+/* Filter selects */
+.filter-input :deep(.q-field__control) {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* GRID */
-.warga-grid {
+.filter-input :deep(.q-field__control:hover),
+.filter-input :deep(.q-field--focused .q-field__control) {
+  border-color: #6366f1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.filter-input :deep(.q-field__native),
+.filter-input :deep(.q-field__input) {
+  color: #e2e8f0;
+}
+
+.filter-input :deep(.q-field__label) {
+  color: #64748b;
+}
+
+/* Card grid */
+.card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 22px;
-  margin-top: 18px;
+  grid-template-columns: 1fr;
+  gap: 14px;
 }
 
-/* CARD */
-.warga-card {
-  border-radius: 20px;
-  padding: 20px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow:
-    0 4px 25px rgba(0, 0, 0, 0.5),
-    inset 0 0 18px rgba(255, 255, 255, 0.05);
-  color: #f5f5f5;
-
-  transition: 0.28s ease;
-  transform: translateY(0);
+@media (min-width: 480px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.warga-card:hover {
-  transform: translateY(-10px);
-  box-shadow:
-    0 8px 35px rgba(0, 0, 0, 0.75),
-    inset 0 0 25px rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #ff4a4a;
+.data-card {
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-/* Title */
-.warga-name {
-  font-size: 1.25rem;
+.data-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+}
+
+.card-name {
+  font-size: 16px;
   font-weight: 700;
-  margin-bottom: 10px;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
+  margin-bottom: 8px;
 }
 
-/* Info rows */
-.warga-email {
+.card-info {
   display: flex;
   align-items: center;
-  font-size: 0.95rem;
-  opacity: 0.9;
-  margin: 4px 0;
   gap: 6px;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 4px;
 }
 
-.warga-email q-icon {
+.info-icon {
+  color: #6366f1;
+}
+
+.card-amount {
   font-size: 18px;
-  opacity: 0.7;
-}
-
-/* White select */
-.select-white :deep(.q-field__control) {
-  background: #ffffff !important;
-  color: #000 !important;
-  border-radius: 10px;
-}
-
-.select-white :deep(.q-field__native) {
-  color: #000 !important;
-}
-
-.select-white :deep(.q-field__label) {
-  color: #444 !important;
+  font-weight: 700;
+  color: #a5b4fc;
+  margin-top: 8px;
 }
 </style>

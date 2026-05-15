@@ -1,96 +1,88 @@
 <template>
   <AppLoader :show="pageLoading" />
-  <q-page class="dashboard-bg" padding>
-    <!-- Profil User -->
-    <q-card flat bordered class="profile-card q-mb-md">
-      <div class="profile-bg">
-        <div class="profile-avatar">
-          <q-avatar size="80px" class="avatar-border">
-            <img :src="user.avatar || defaultAvatar" alt="User" />
-          </q-avatar>
-        </div>
-        <div class="profile-info">
-          <div class="text-h6">{{ user.name }}</div>
-          <div class="text-subtitle2">{{ user.nokk }}</div>
+  <q-page class="dashboard-page">
+    <!-- Animated background orbs -->
+    <div class="bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <div class="dashboard-content">
+      <!-- Profile Card -->
+      <div class="glass-card profile-card">
+        <div class="profile-inner">
+          <div class="avatar-ring">
+            <q-avatar size="72px">
+              <img :src="user.avatar || defaultAvatar" alt="User" />
+            </q-avatar>
+          </div>
+          <div class="profile-details">
+            <div class="profile-name">{{ user.name }}</div>
+            <div class="profile-nokk">{{ user.nokk }}</div>
+          </div>
         </div>
       </div>
-    </q-card>
 
-    <!-- Menu Grid -->
-
-    <q-card flat bordered class="menu-container q-pa-md">
-      <q-card-section class="row items-center justify-center">
+      <!-- Menu Grid -->
+      <div class="glass-card menu-section">
+        <div class="section-label">Menu</div>
         <div class="menu-grid">
-          <q-card
+          <div
             v-for="item in menuItems"
             :key="item.name"
-            class="menu-card"
-            flat
-            bordered
-            clickable
-            v-ripple
-            :style="{ background: item.color }"
+            class="menu-item"
+            :style="{ '--accent': item.color }"
             @click="navigate(item.link)"
           >
-            <q-card-section class="row items-center justify-center relative-position">
-              <div class="icon-wrapper">
-                <q-icon :name="item.icon" size="36px" class="text-white" />
-
-                <q-badge
-                  v-if="item.name === 'notif' && storenotif.unreadCount > 0"
-                  class="notif-badge-modern"
-                  :label="storenotif.unreadCount > 9 ? '9+' : storenotif.unreadCount"
-                />
-              </div>
-            </q-card-section>
-
-            <q-card-section class="text-center">
-              <div class="menu-label text-white">
-                {{ item.label }}
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </q-card-section>
-    </q-card>
-
-    <!-- Waktu Shalat -->
-    <q-card flat bordered class="shalat-card q-pa-md q-mb-md">
-      <div class="text-h6 text-white text-center q-mb-sm">Jadwal Shalat Hari Ini</div>
-
-      <div class="shalat-grid">
-        <div v-for="(waktu, nama) in storecuaca.items" :key="nama" class="shalat-item">
-          <div class="shalat-nama">{{ nama }}</div>
-          <div class="shalat-waktu">{{ waktu }}</div>
-        </div>
-      </div>
-    </q-card>
-
-    <!-- Cuaca Card -->
-    <q-card flat bordered class="cuaca-card q-pa-md">
-      <div v-for="(group, tanggal) in groupedCuaca" :key="tanggal" class="q-mb-xl">
-        <div class="text-h8 text-white q-mb-sm text-weight-bold text-center">
-          Prakiraan Cuaca PERUM Bengawan Indah pada Tanggal
-          <span class="text-h6"> {{ tanggal }}</span>
-        </div>
-
-        <div class="cuaca-table text-italic">
-          <div class="cuaca-row header">
-            <div align="center">Jam</div>
-            <div align="center">Suhu</div>
-            <div align="center">Cuaca</div>
-            <div align="center">Icon</div>
-          </div>
-
-          <div class="cuaca-row" v-for="(item, i) in group" :key="i">
-            <div align="center">{{ item.jam }}</div>
-            <div align="center">{{ item.suhu }}°C</div>
-            <div align="center">{{ item.cuaca }}</div>
-            <div align="center"><img :src="item.image" width="40" /></div>
+            <div class="menu-icon-box">
+              <q-icon :name="item.icon" size="30px" class="menu-icon" />
+              <q-badge
+                v-if="item.name === 'notif' && storenotif.unreadCount > 0"
+                class="notif-badge"
+                :label="storenotif.unreadCount > 9 ? '9+' : storenotif.unreadCount"
+              />
+            </div>
+            <div class="menu-label">{{ item.label }}</div>
           </div>
         </div>
       </div>
-    </q-card>
+
+      <!-- Shalat Card -->
+      <div class="glass-card shalat-section">
+        <div class="section-label text-center">Jadwal Shalat Hari Ini</div>
+        <div class="shalat-grid">
+          <div v-for="(waktu, nama) in storecuaca.items" :key="nama" class="shalat-item">
+            <div class="shalat-nama">{{ nama }}</div>
+            <div class="shalat-waktu">{{ waktu }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuaca Card -->
+      <div class="glass-card cuaca-section">
+        <div v-for="(group, tanggal) in groupedCuaca" :key="tanggal">
+          <div class="section-label text-center">
+            Prakiraan Cuaca — <span class="accent">{{ tanggal }}</span>
+          </div>
+
+          <div class="cuaca-table">
+            <div class="cuaca-row header">
+              <div>Jam</div>
+              <div>Suhu</div>
+              <div>Cuaca</div>
+              <div>Icon</div>
+            </div>
+            <div class="cuaca-row" v-for="(item, i) in group" :key="i">
+              <div>{{ item.jam }}</div>
+              <div>{{ item.suhu }}°C</div>
+              <div>{{ item.cuaca }}</div>
+              <div><img :src="item.image" width="36" /></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -116,13 +108,11 @@ const defaultAvatar =
 const user = ref({ name: '', email: '', avatar: '' })
 const menuItems = ref([])
 
-// Navigasi SPA aman
 const navigate = (link) => router.push(link)
 
 onMounted(async () => {
   pageLoading.value = true
 
-  // Ambil user dari localStorage
   try {
     const userData = localStorage.getItem('user') || '{}'
     user.value = JSON.parse(userData)
@@ -130,7 +120,6 @@ onMounted(async () => {
     console.error('Gagal parsing user data', e)
   }
 
-  // Ambil menu dari localStorage
   try {
     const menuData = localStorage.getItem('menus') || '[]'
     const parsedMenu = JSON.parse(menuData)
@@ -139,7 +128,6 @@ onMounted(async () => {
     console.error('Gagal parsing menu data', e)
   }
 
-  // Ambil data cuaca
   await storecuaca.getCuaca()
   storecuaca.jadwatshalat()
   pageLoading.value = false
@@ -161,143 +149,280 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.dashboard-bg {
-  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.dashboard-page {
+  position: relative;
   min-height: 100vh;
+  background: radial-gradient(circle at top, #020617, #020617 40%, #000000);
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  padding-bottom: 32px;
+}
+
+/* Animated background orbs */
+.bg-orbs {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: float 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 280px;
+  height: 280px;
+  background: #6366f1;
+  top: -60px;
+  left: -40px;
+}
+
+.orb-2 {
+  width: 220px;
+  height: 220px;
+  background: #0ea5e9;
+  bottom: -40px;
+  right: -30px;
+  animation-delay: -3s;
+}
+
+.orb-3 {
+  width: 180px;
+  height: 180px;
+  background: #8b5cf6;
+  top: 50%;
+  left: 60%;
+  animation-delay: -5s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.05);
+  }
+}
+
+/* Content wrapper */
+.dashboard-content {
+  position: relative;
+  z-index: 1;
   padding: 16px;
-}
-
-/* ===============================
-   CARD GLOBAL STYLE
-================================ */
-.profile-card,
-.menu-container,
-.shalat-card,
-.cuaca-card {
-  border-radius: 20px;
-  background: linear-gradient(145deg, #0f172a, #020617);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 12px 30px rgba(0, 0, 0, 0.7);
-}
-
-/* ===============================
-   PROFILE
-================================ */
-.profile-card {
-  margin-bottom: 16px;
-}
-
-.profile-bg {
-  padding: 24px 16px 18px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  gap: 16px;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
-.profile-info div {
-  color: #e5e7eb;
+/* Glass card base */
+.glass-card {
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  animation: cardSlideIn 0.5s ease-out both;
 }
 
-/* ===============================
-   MENU
-================================ */
-.menu-container {
-  margin-bottom: 20px;
+.glass-card:nth-child(1) {
+  animation-delay: 0s;
+}
+.glass-card:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.glass-card:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.glass-card:nth-child(4) {
+  animation-delay: 0.24s;
 }
 
-.menu-grid {
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section label */
+.section-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+}
+
+.accent {
+  color: #818cf8;
+  font-weight: 700;
+}
+
+/* Profile */
+.profile-inner {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
   gap: 16px;
 }
 
-.menu-card {
-  width: 120px;
-  height: 120px;
-  border-radius: 16px;
-  /* background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.08),
-    rgba(255, 255, 255, 0.03)
-  ) !important; */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: all 0.25s ease;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.avatar-ring {
+  padding: 3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #0ea5e9);
+  flex-shrink: 0;
 }
 
-.menu-card:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.85);
+.profile-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.profile-nokk {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* Menu grid */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.menu-item:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+}
+
+.menu-item:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.menu-icon-box {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: var(--accent, linear-gradient(135deg, #6366f1, #8b5cf6));
+}
+
+.menu-icon {
+  color: #fff;
 }
 
 .menu-label {
-  color: #f8fafc;
+  font-size: 12px;
   font-weight: 600;
+  color: #cbd5e1;
+  text-align: center;
+  line-height: 1.2;
 }
 
-/* ===============================
-   SHALAT
-================================ */
-.shalat-card {
-  margin-bottom: 20px;
+.notif-badge {
+  position: absolute;
+  top: -6px;
+  right: -20px;
+  font-size: 10px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 700;
 }
 
+/* Shalat */
 .shalat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  gap: 12px;
-  margin-top: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
 }
 
 .shalat-item {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 14px;
   padding: 12px 6px;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.2s ease;
+}
+
+.shalat-item:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .shalat-nama {
-  font-size: 13px;
-  color: #c7d2fe;
+  font-size: 12px;
+  color: #a5b4fc;
   font-weight: 600;
+  margin-bottom: 4px;
 }
 
 .shalat-waktu {
-  font-size: 17px;
-  font-weight: bold;
-  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
 }
 
-/* ===============================
-   CUACA
-================================ */
-.cuaca-card {
-  margin-bottom: 24px;
-}
-
+/* Cuaca */
 .cuaca-table {
-  width: 100%;
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .cuaca-row {
   display: grid;
-  grid-template-columns: 70px 60px 70px 80px 1fr;
-  padding: 10px 12px;
+  grid-template-columns: 60px 60px 1fr 60px;
+  padding: 10px 14px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  color: #f8fafc;
+  color: #e2e8f0;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  text-align: center;
 }
 
 .cuaca-row:last-child {
@@ -305,46 +430,18 @@ onMounted(async () => {
 }
 
 .cuaca-row.header {
-  background: rgba(255, 255, 255, 0.14);
-  font-weight: bold;
-  text-align: center;
-}
-
-.icon-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.notif-badge-modern {
-  position: absolute;
-  top: -15px;
-  right: -40px;
+  background: rgba(99, 102, 241, 0.15);
+  font-weight: 700;
+  color: #c7d2fe;
   font-size: 12px;
-  min-width: 16px;
-  height: 16px;
-  border-radius: 10px;
-  background: red;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* @keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 6px rgba(255, 59, 48, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
-  }
-} */
-
-/* ===============================
-   RESPONSIVE
-================================ */
-@media (min-width: 600px) {
-  .menu-card {
-    width: 140px;
-    height: 140px;
+/* Responsive */
+@media (min-width: 480px) {
+  .menu-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 </style>

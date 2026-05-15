@@ -1,8 +1,8 @@
 {
-  "name": "front-perumbix",
+  "name": "front-serayu",
   "version": "0.0.1",
   "description": "A Quasar Project",
-  "productName": "Sistem Informasi Perumahan Bengawan Indah",
+  "productName": "Sistem Informasi Cluster Serayu",
   "author": "kentangkotak <ariezlnd69@gmail.com>",
   "type": "module",
   "private": true,
