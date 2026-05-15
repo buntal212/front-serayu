@@ -143,7 +143,7 @@ const groupedCuaca = computed(() =>
 
 onMounted(async () => {
   const token = await requestFcmToken()
-  storenotif.getUnreadCount
+  storenotif.getUnreadCount()
   console.log('🔥 TOKEN FINAL:', token)
 })
 </script>
