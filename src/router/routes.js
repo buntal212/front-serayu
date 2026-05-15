@@ -28,6 +28,10 @@ const routes = [
         component: () => import('pages/Seting/IndexPage.vue'),
       },
       {
+        path: '/historypembayaran',
+        component: () => import('pages/HistoryPembayaran/IndexPages.vue'),
+      },
+      {
         path: 'logout',
         component: () => import('src/pages/LogoutPage.vue'),
       },

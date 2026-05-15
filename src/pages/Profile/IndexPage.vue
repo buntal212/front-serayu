@@ -24,17 +24,17 @@
 
         <div class="detail-list">
           <div class="detail-item">
-            <div class="detail-label">NIK / NO KK</div>
+            <div class="detail-label">NO. Rumah</div>
             <div class="detail-value">{{ user.nokk || '-' }}</div>
           </div>
           <div class="detail-item">
             <div class="detail-label">Username</div>
             <div class="detail-value">{{ user.username || '-' }}</div>
           </div>
-          <div class="detail-item">
+          <!-- <div class="detail-item">
             <div class="detail-label">Terakhir Update</div>
             <div class="detail-value">{{ humanDate(user.updated_at) }}</div>
-          </div>
+          </div> -->
         </div>
 
         <div class="btn-group">
@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { humanDate } from 'src/modules/formatter'
+// import { humanDate } from 'src/modules/formatter'
 import { onMounted, ref } from 'vue'
 // import DaftarDokumen from '../componen/DaftarDokumen.vue'
 import { useWargaStore } from 'src/stores/Warga/warga'

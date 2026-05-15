@@ -49,7 +49,7 @@
             />
           </div>
           <div class="warga-name">Keluarga {{ w.name }}</div>
-          <div class="warga-nik">No. KK: {{ w.nokk || '-' }}</div>
+          <div class="warga-nik">No. Rumah: {{ w.nokk || '-' }}</div>
         </div>
       </template>
     </div>

@@ -27,7 +27,7 @@
         />
         <q-input
           v-model="store.form.nokk"
-          label="NO. KK"
+          label="NO. Rumah"
           dense
           filled
           class="form-input"
@@ -41,18 +41,18 @@
             class="btn-save full-width"
             :loading="store.loading"
           />
-          <q-btn
+          <!-- <q-btn
             v-if="store.form.id"
             label="Tambah Dokumen Anggota Keluarga"
             class="btn-add full-width"
             @click="tambahanggota(localx?.name, store.form.nokk)"
-          />
+          /> -->
         </div>
       </q-form>
     </div>
 
     <!-- Documents section -->
-    <div v-if="localx?.name === 'Programer'" class="glass-card docs-section">
+    <!-- <div v-if="localx?.name === 'Programer'" class="glass-card docs-section">
       <DaftarDokumen @hapus="hapusrinci" :id_heder="Number(store.form.id)" />
     </div>
     <div v-else class="glass-card docs-section">
@@ -63,17 +63,17 @@
       <div v-else>
         <DaftarDokumen @hapus="hapusrinci" :id_heder="store.form.id" />
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup>
-import { notifError } from 'src/modules/notifs'
-import DaftarDokumen from 'src/pages/componen/DaftarDokumen.vue'
+// import { notifError } from 'src/modules/notifs'
+// import DaftarDokumen from 'src/pages/componen/DaftarDokumen.vue'
 import { useWargaStore } from 'src/stores/Warga/warga'
 import { onMounted, ref, watch } from 'vue'
 
-const localx = JSON.parse(localStorage.getItem('user') || '{}')
+// const localx = JSON.parse(localStorage.getItem('user') || '{}')
 const store = useWargaStore()
 const props = defineProps({
   data: {
@@ -90,28 +90,28 @@ function onSubmit() {
   store.simpan()
 }
 
-function tambahanggota(yangakses, yangdiakses) {
-  if (yangdiakses === '' || yangdiakses === null) {
-    notifError('Isi Dulu No KKnya...!!!')
-  } else {
-    if (yangakses === 'Programer') {
-      store.dialog = true
-      store.formrinci.nokk = yangdiakses
-    } else {
-      if (yangdiakses === '3574030701890001') {
-        notifError('Akses Ditolak...!!!')
-      } else {
-        store.dialog = true
-        store.formrinci.nokk = yangdiakses
-      }
-    }
-  }
-}
+// function tambahanggota(yangakses, yangdiakses) {
+//   if (yangdiakses === '' || yangdiakses === null) {
+//     notifError('Isi Dulu No KKnya...!!!')
+//   } else {
+//     if (yangakses === 'Programer') {
+//       store.dialog = true
+//       store.formrinci.nokk = yangdiakses
+//     } else {
+//       if (yangdiakses === '3574030701890001') {
+//         notifError('Akses Ditolak...!!!')
+//       } else {
+//         store.dialog = true
+//         store.formrinci.nokk = yangdiakses
+//       }
+//     }
+//   }
+// }
 
-function hapusrinci(data) {
-  store.formrinci.id = data.id
-  store.hapusrinci(data)
-}
+// function hapusrinci(data) {
+//   store.formrinci.id = data.id
+//   store.hapusrinci(data)
+// }
 
 watch(
   () => store.resetUploaderKey,
