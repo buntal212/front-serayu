@@ -7,16 +7,23 @@ export const usenotifikasiStore = defineStore('notifikasi', {
     notifications: [],
     notificationsdetail: {},
     unreadCount: [],
-    loading: false
+    loading: false,
   }),
 
   getters: {
     getNotifications: (state) => state.notifications,
-    getUnreadCount: (state) => state.unreadCount.length
+    getUnreadCount: (state) => state.unreadCount.length,
   },
 
   actions: {
-    async loadNotifications () {
+    async simpantoken(token) {
+      await api.post('/notif/simpantoken/simpantoken', {
+        token,
+        platform: 'web',
+        device_name: navigator.userAgent,
+      })
+    },
+    async loadNotifications() {
       this.loading = true
       try {
         const res = await api.get('notif/simpantoken/notifications')
@@ -28,14 +35,14 @@ export const usenotifikasiStore = defineStore('notifikasi', {
           type: 'negative',
           message: 'Gagal memuat notifikasi',
           position: 'top',
-          timeout: 3000
+          timeout: 3000,
         })
       } finally {
         this.loading = false
       }
     },
 
-    async loadNotificationDetail (id) {
+    async loadNotificationDetail(id) {
       try {
         const res = await api.get(`notif/simpantoken/notifications/${id}`)
         this.notificationsdetail = res.data.data
@@ -46,12 +53,12 @@ export const usenotifikasiStore = defineStore('notifikasi', {
           type: 'negative',
           message: 'Gagal memuat detail notifikasi',
           position: 'top',
-          timeout: 3000
+          timeout: 3000,
         })
       }
     },
 
-    async markAllRead () {
+    async markAllRead() {
       try {
         await api.post('notification/mark-all-read')
         await this.loadNotifications()
@@ -59,7 +66,7 @@ export const usenotifikasiStore = defineStore('notifikasi', {
           type: 'positive',
           message: 'Semua notifikasi ditandai dibaca',
           position: 'top',
-          timeout: 2000
+          timeout: 2000,
         })
       } catch (error) {
         console.error('Failed to mark all as read:', error)
@@ -67,12 +74,12 @@ export const usenotifikasiStore = defineStore('notifikasi', {
           type: 'negative',
           message: 'Gagal menandai notifikasi',
           position: 'top',
-          timeout: 3000
+          timeout: 3000,
         })
       }
     },
 
-    async markAsRead (id) {
+    async markAsRead(id) {
       try {
         await api.post(`notification/${id}/mark-read`)
         const notif = this.notifications.find((n) => n.id === id)
@@ -81,6 +88,6 @@ export const usenotifikasiStore = defineStore('notifikasi', {
       } catch (error) {
         console.error('Failed to mark as read:', error)
       }
-    }
-  }
+    },
+  },
 })
