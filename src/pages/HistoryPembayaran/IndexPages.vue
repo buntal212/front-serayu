@@ -76,13 +76,15 @@ import ListPage from './comp/ListPage.vue'
 // import LaporanPDF from './comp/LaporanPDF.vue'
 // import { getNamaBulan } from 'src/utils/dateHelper'
 import { useBulanStore } from 'src/stores/bulan'
+import { useHistoryPembayaranStore } from 'src/stores/history/historypembayaran'
 // import { useLapPembayaranIuranStore } from 'src/stores/laporan/lappembayaraniuran'
 
 const storebulan = useBulanStore()
-// const store = useLapPembayaranIuranStore()
+const store = useHistoryPembayaranStore()
 const pdfRef = ref(null)
 
 onMounted(() => {
+  store.getlist()
   storebulan.getlist()
   console.log('pdfEl mounted:', pdfRef.value)
 })
