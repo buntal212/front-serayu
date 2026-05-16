@@ -3,11 +3,13 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 import { usenotifikasiStore } from 'src/stores/notif/notif'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyASYtJXVc9H_96OZtw6oxUb_-WvZ1zUOYk',
-  authDomain: 'perum-bi-app.firebaseapp.com',
-  projectId: 'perum-bi-app',
-  messagingSenderId: '654914326199',
-  appId: '1:654914326199:web:13b79c606e14618044c732',
+  apiKey: 'AIzaSyC6_ai8KJCJ8ydwZB-jGI8GI71cE7Lx9HY',
+  authDomain: 'cluster-serayu.firebaseapp.com',
+  projectId: 'cluster-serayu',
+  storageBucket: 'cluster-serayu.firebasestorage.app',
+  messagingSenderId: '493948301355',
+  appId: '1:493948301355:web:e14fc0e5245b2e04d0ba6e',
+  measurementId: 'G-BR7ZP3WW4L',
 }
 
 const app = initializeApp(firebaseConfig)
@@ -23,7 +25,7 @@ export async function requestFcmToken() {
   const registration = await navigator.serviceWorker.ready
   const token = await getToken(messaging, {
     vapidKey:
-      'BFHWPxbE0RvsQhdbImFC_8nMyO3T5HvI42cBbDuDneT81AZl2p1986kkvTOPmU0tyy8SfWVhj15eZUEWLv3bvqs',
+      'BEY8m6CxHQgDZiSnvHwjTdHqo6jT6ZNoWpKWKLdnnhniIcXmXmWgd3u75e9ZX8pvDlygy9Bb60OY4gufGxztp7E',
     serviceWorkerRegistration: registration,
   })
 
