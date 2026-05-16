@@ -4,7 +4,7 @@ import { onMounted, onBeforeUnmount } from 'vue'
 
 export function useAutoLogout(router) {
   const $q = useQuasar()
-  const TIMEOUT_MINUTES = 15
+  const TIMEOUT_MINUTES = 24 * 60
   const TIMEOUT_MS = TIMEOUT_MINUTES * 60 * 1000
   let timeout = null
 

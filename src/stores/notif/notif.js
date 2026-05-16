@@ -18,10 +18,35 @@ export const usenotifikasiStore = defineStore('notifikasi-store', {
   }),
   actions: {
     async simpantoken(token) {
+      const ua = navigator.userAgent
+
+      const isAndroid = /Android/i.test(ua)
+      const isiPhone = /iPhone/i.test(ua)
+      const isiPad = /iPad/i.test(ua)
+      const isIOS = /iPhone|iPad|iPod/i.test(ua)
+
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(ua)
+
+      const os = isAndroid ? 'Android' : isIOS ? 'iOS' : 'Desktop'
+      const modelMatch = ua.match(/\((.*?)\)/)
+
       await api.post('/notif/simpantoken/simpantoken', {
         token,
-        platform: 'web',
+        platform: navigator.platform,
         device_name: navigator.userAgent,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        online: navigator.onLine,
+        language: navigator.language,
+        isPWAInstalled: window.matchMedia('(display-mode: standalone)').matches
+          ? 'standalone'
+          : 'browser',
+        isAndroid,
+        isiPhone,
+        isiPad,
+        isIOS,
+        isMobile,
+        os,
+        modelMatch,
       })
     },
     async loadNotifications() {
