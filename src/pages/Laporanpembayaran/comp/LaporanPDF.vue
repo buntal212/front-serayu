@@ -1,15 +1,13 @@
 <template>
   <div class="pdf-page">
     <!-- HEADER -->
-    <KopDokumen :namadokumen="namadokumen" />
+    <KopDokumen :namadokumen="namadokumen" :bulan="bulanx" :tahun="tahun" />
 
     <!-- TITLE -->
-    <div class="report-header">
-      <div class="report-title">LAPORAN PEMBAYARAN IURAN</div>
-
-      <div class="report-subtitle">Bulan {{ getNamaBulan(bulanx) }} {{ tahun }}</div>
-
-      <div class="report-date">Digenerete : {{ formatTanggal(new Date()) }}</div>
+    <div class="laporan-header">
+      <div class="text-center">
+        <div class="text-caption">Dicetak: {{ formatTanggal(new Date()) }}</div>
+      </div>
     </div>
 
     <!-- TABLE -->
@@ -185,29 +183,10 @@ onMounted(async () => {
    HEADER
 ====================== */
 
-.report-header {
-  text-align: center;
-  margin-top: 10px;
+.laporan-header {
   margin-bottom: 20px;
-}
-
-.report-title {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #111827;
-}
-
-.report-subtitle {
-  font-size: 13px;
-  margin-top: 4px;
-  color: #374151;
-}
-
-.report-date {
-  margin-top: 6px;
-  font-size: 11px;
-  color: #6b7280;
+  padding-bottom: 14px;
+  border-bottom: 3px solid #111827;
 }
 
 /* ======================
