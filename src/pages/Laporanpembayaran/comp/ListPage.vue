@@ -23,32 +23,59 @@
             :key="w.id || index"
             flat
             bordered
-            class="warga-card"
+            :class="['warga-card', w.notrans === null ? 'card-belum-bayar' : 'card-sudah-bayar']"
           >
-            <div class="card-number">#{{ index + 1 }}</div>
+            <!-- STATUS -->
+            <div :class="['status-badge', w.notrans === null ? 'status-danger' : 'status-success']">
+              <q-icon :name="w.notrans === null ? 'warning' : 'check_circle'" size="14px" />
 
-            <div class="warga-name">
-              {{ w.nama }}
+              {{ w.notrans === null ? 'Belum Bayar' : 'Sudah Bayar' }}
             </div>
 
+            <!-- NOMOR -->
+            <div class="card-number">#{{ index + 1 }}</div>
+
+            <!-- NAMA -->
+            <div class="warga-name">
+              {{ w.nama }}
+
+              <span class="text-grey-5 text-caption q-ml-xs">
+                {{ w.nokk }}
+              </span>
+            </div>
+
+            <!-- INFO -->
             <div class="info-group">
               <div class="info-item">
                 <q-icon name="event" size="16px" />
-                <span> {{ getNamaBulan(w?.bulan) }} {{ w?.tahun }} </span>
+                <span v-if="w.notrans === null">
+                  {{ getNamaBulan(store.params.bulan) }}
+                  {{ store.params.tahun }}
+                </span>
+                <span v-else> {{ getNamaBulan(w?.bulan) }} {{ w?.tahun }} </span>
               </div>
 
               <div class="info-item">
                 <q-icon name="payments" size="16px" />
-                <span>{{ w.cara_bayar }}</span>
+
+                <span>
+                  {{ w.notrans !== null ? w.cara_bayar : 'Menunggu Pembayaran' }}
+                </span>
               </div>
 
               <div class="info-item">
                 <q-icon name="schedule" size="16px" />
-                <span>{{ humanDate(w.created_at) }}</span>
+
+                <span>
+                  {{ humanDate(w.created_at) }}
+                </span>
               </div>
             </div>
 
-            <div class="nominal-box">
+            <!-- NOMINAL -->
+            <div
+              :class="['nominal-box', w.notrans === null ? 'nominal-danger' : 'nominal-success']"
+            >
               {{ formatDouble(w.nominal) || '-' }}
             </div>
           </q-card>
@@ -112,95 +139,159 @@ const store = useLapPembayaranIuranStore()
 .warga-card {
   position: relative;
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: 26px;
   padding: 22px;
-  background: rgba(15, 23, 42, 0.72);
   backdrop-filter: blur(18px);
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+
   border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #fff;
-  transition: all 0.3s ease;
 
   box-shadow:
     0 10px 35px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .warga-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(99, 102, 241, 0.4);
-
-  box-shadow:
-    0 20px 45px rgba(0, 0, 0, 0.45),
-    0 0 20px rgba(99, 102, 241, 0.15);
+  transform: translateY(-8px) scale(1.015);
 }
 
-/* GLOW */
-.warga-card::before {
-  content: '';
+/* BELUM BAYAR */
+.card-belum-bayar {
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.88), rgba(69, 10, 10, 0.92));
+
+  border-color: rgba(248, 113, 113, 0.25);
+}
+
+.card-belum-bayar:hover {
+  box-shadow:
+    0 18px 45px rgba(239, 68, 68, 0.22),
+    0 0 20px rgba(239, 68, 68, 0.15);
+}
+
+/* SUDAH BAYAR */
+.card-sudah-bayar {
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.88), rgba(2, 44, 34, 0.92));
+
+  border-color: rgba(74, 222, 128, 0.22);
+}
+
+.card-sudah-bayar:hover {
+  box-shadow:
+    0 18px 45px rgba(34, 197, 94, 0.22),
+    0 0 20px rgba(34, 197, 94, 0.12);
+}
+
+/* STATUS */
+.status-badge {
   position: absolute;
-  width: 160px;
-  height: 160px;
-  background: rgba(99, 102, 241, 0.15);
-  border-radius: 50%;
-  top: -80px;
-  right: -80px;
-  filter: blur(20px);
+  top: 18px;
+  right: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+
+  backdrop-filter: blur(12px);
+}
+
+.status-danger {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.status-success {
+  background: rgba(34, 197, 94, 0.16);
+  color: #bbf7d0;
+  border: 1px solid rgba(34, 197, 94, 0.22);
 }
 
 /* NUMBER */
 .card-number {
-  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.08);
+
   font-weight: 700;
-  margin-bottom: 14px;
-  font-size: 13px;
+  margin-bottom: 16px;
+
+  backdrop-filter: blur(10px);
+
+  color: white;
 }
 
-/* NAME */
+/* NAMA */
 .warga-name {
   font-size: 18px;
   font-weight: 700;
-  color: #f8fafc;
-  margin-bottom: 16px;
-  line-height: 1.4;
+  color: white;
+  margin-bottom: 18px;
+  line-height: 1.5;
 }
 
 /* INFO */
 .info-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .info-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #cbd5e1;
+
+  color: rgba(255, 255, 255, 0.82);
   font-size: 13px;
 }
 
 .info-item .q-icon {
-  color: #818cf8;
+  opacity: 0.9;
 }
 
 /* NOMINAL */
 .nominal-box {
-  margin-top: 18px;
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.18);
+  margin-top: 22px;
 
-  font-size: 20px;
-  font-weight: 700;
-  color: #c7d2fe;
+  padding: 16px;
+  border-radius: 18px;
+
   text-align: center;
+
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+
+  backdrop-filter: blur(12px);
+}
+
+.nominal-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.nominal-success {
+  background: rgba(34, 197, 94, 0.12);
+  color: #bbf7d0;
+  border: 1px solid rgba(34, 197, 94, 0.22);
 }
 
 /* ORBS */
@@ -282,5 +373,15 @@ const store = useLapPembayaranIuranStore()
       transform: translateY(0);
     }
   }
+}
+
+.card-belum-bayar {
+  border-left: 5px solid #ef5350;
+  background: rgba(239, 83, 80, 0.08);
+}
+
+.card-sudah-bayar {
+  border-left: 5px solid #66bb6a;
+  background: rgba(102, 187, 106, 0.08);
 }
 </style>
