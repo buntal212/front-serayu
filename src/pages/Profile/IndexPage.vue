@@ -87,7 +87,8 @@ user.value = JSON.parse(userData)
 
 const store = useWargaStore()
 const router = useRouter()
-const backendUrl = 'http://localhost:8111'
+const apiUrl = import.meta.env.VITE_API_URL
+const backendUrl = apiUrl.replace('/api/v1', '')
 // function logout() {
 //   router.push('/logout')
 // }
