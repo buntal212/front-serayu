@@ -14,7 +14,10 @@
         <div class="profile-inner">
           <div class="avatar-ring">
             <q-avatar size="72px">
-              <img :src="user.avatar || defaultAvatar" alt="User" />
+              <img
+                :src="previewAvatar ? previewAvatar : backendUrl + user.foto"
+                @error="onImageError"
+              />
             </q-avatar>
           </div>
           <div class="profile-details">
@@ -101,7 +104,11 @@ const pageLoading = ref(true)
 const storecuaca = useCuacaStore()
 const storenotif = usenotifikasiStore()
 useAutoLogout(router)
-
+const apiUrl = import.meta.env.VITE_API_URL
+const backendUrl = apiUrl.replace('/api/v1', '')
+function onImageError(event) {
+  event.target.src = defaultAvatar
+}
 const defaultAvatar =
   'https://i0.wp.com/www.rukita.co/stories/wp-content/uploads/2022/04/3b0440d25a78d581953ddc0a1237615e.webp?w=600&ssl=1'
 

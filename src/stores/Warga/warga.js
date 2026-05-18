@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { Notify } from 'quasar'
 import { api } from 'src/boot/axios'
 import { notifError, notifSuccess } from 'src/modules/notifs'
 
@@ -203,20 +204,35 @@ export const useWargaStore = defineStore('mwarga', {
     },
 
     async updateProfile(formData) {
-      try {
-        for (let pair of formData.entries()) {
-          console.log(pair[0], pair[1])
-        }
+      this.loading = true
 
+      try {
         const response = await api.post('/master/warga/profileupdate', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         })
 
+        // inject user baru ke localStorage
+        localStorage.setItem('user', JSON.stringify(response.data.data))
+
+        Notify.create({
+          position: 'top-right',
+          type: 'positive',
+          message: response.data.message || 'Profile berhasil diupdate',
+        })
+
         return response.data
       } catch (err) {
+        Notify.create({
+          position: 'top-right',
+          type: 'negative',
+          message: err?.response?.data?.message || 'Gagal update profile',
+        })
+
         console.log(err)
+      } finally {
+        this.loading = false
       }
     },
   },

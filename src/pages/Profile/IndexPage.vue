@@ -15,7 +15,10 @@
         <div class="profile-top">
           <div class="avatar-ring cursor-pointer" @click="$refs.fotoPicker.pickFiles()">
             <q-avatar size="90px">
-              <img :src="backendUrl + user.foto || defaultAvatar" @error="onImageError" />
+              <img
+                :src="previewAvatar ? previewAvatar : backendUrl + user.foto"
+                @error="onImageError"
+              />
             </q-avatar>
 
             <div class="edit-icon">
@@ -30,16 +33,6 @@
             style="display: none"
             @update:model-value="previewImage"
           />
-
-          <q-input
-            v-model="user.name"
-            dark
-            borderless
-            class="name-input"
-            input-class="text-center text-white"
-          />
-
-          <div class="profile-nokk">{{ user.nokk ?? '-' }}</div>
         </div>
 
         <div class="detail-list">
@@ -48,8 +41,14 @@
             <div class="detail-value">{{ user.nokk || '-' }}</div>
           </div>
           <div class="detail-item">
-            <div class="detail-label">Username</div>
-            <div class="detail-value">{{ user.username || '-' }}</div>
+            <div class="detail-label">Nama</div>
+            <q-input
+              v-model="user.name"
+              dark
+              borderless
+              class="name-input"
+              input-class="text-center text-white"
+            />
           </div>
           <!-- <div class="detail-item">
             <div class="detail-label">Terakhir Update</div>
@@ -58,7 +57,14 @@
         </div>
 
         <div class="btn-group">
-          <q-btn class="action-btn logout-btn" outline rounded label="SIMPAN" @click="simpan()" />
+          <q-btn
+            class="action-btn logout-btn"
+            outline
+            rounded
+            label="SIMPAN"
+            @click="simpan()"
+            :loading="store.loading"
+          />
           <!-- <q-btn
             class="action-btn tambah-btn"
             outline
@@ -386,6 +392,9 @@ onMounted(() => {
 .name-input {
   width: 100%;
   max-width: 250px;
+}
+.name-input :deep(input) {
+  text-align: left;
 }
 
 .upload-input {
