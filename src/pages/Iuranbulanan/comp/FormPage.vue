@@ -26,6 +26,7 @@
           map-options
           class="form-input"
           dark
+          readonly
           :rules="[(val) => !!val || 'Nama wajib diisi']"
         />
 
@@ -42,6 +43,7 @@
           map-options
           class="form-input"
           dark
+          readonly
           :rules="[(val) => !!val || 'Nama wajib diisi']"
         />
 
@@ -196,11 +198,13 @@ function onSubmit() {
 }
 
 onMounted(() => {
-  store.initReset()
-  const stringdulu = store.form.bulan.toString()
+  // store.initReset()
+  // const stringdulu = store.form.bulan.toString()
 
-  const sasa = props.bulan?.find((v) => v.kode === stringdulu)
-  store.form.bulan = sasa.kode
+  // const sasa = props.bulan?.find((v) => v.kode === stringdulu)
+  // store.form.bulan = sasa.kode
+  store.form.bulan = store.params.bulan
+  store.form.tahun = store.params.tahun
 })
 </script>
 
