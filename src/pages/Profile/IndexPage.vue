@@ -13,12 +13,32 @@
       <!-- Profile Card -->
       <div class="glass-card profile-card">
         <div class="profile-top">
-          <div class="avatar-ring">
-            <q-avatar size="80px">
-              <img :src="user.avatar || defaultAvatar" alt="User" />
+          <div class="avatar-ring cursor-pointer" @click="$refs.fotoPicker.pickFiles()">
+            <q-avatar size="90px">
+              <img :src="backendUrl + user.foto || defaultAvatar" @error="onImageError" />
             </q-avatar>
+
+            <div class="edit-icon">
+              <q-icon name="photo_camera" size="18px" color="white" />
+            </div>
           </div>
-          <div class="profile-name">{{ user.name }}</div>
+
+          <q-file
+            ref="fotoPicker"
+            v-model="foto"
+            accept="image/*"
+            style="display: none"
+            @update:model-value="previewImage"
+          />
+
+          <q-input
+            v-model="user.name"
+            dark
+            borderless
+            class="name-input"
+            input-class="text-center text-white"
+          />
+
           <div class="profile-nokk">{{ user.nokk ?? '-' }}</div>
         </div>
 
@@ -38,7 +58,7 @@
         </div>
 
         <div class="btn-group">
-          <q-btn class="action-btn logout-btn" outline rounded label="Logout" @click="logout" />
+          <q-btn class="action-btn logout-btn" outline rounded label="SIMPAN" @click="simpan()" />
           <!-- <q-btn
             class="action-btn tambah-btn"
             outline
@@ -67,9 +87,39 @@ user.value = JSON.parse(userData)
 
 const store = useWargaStore()
 const router = useRouter()
+const backendUrl = 'http://localhost:8111'
+// function logout() {
+//   router.push('/logout')
+// }
 
-function logout() {
-  router.push('/logout')
+const foto = ref(null)
+const previewAvatar = ref('')
+
+function previewImage(file) {
+  if (file) {
+    previewAvatar.value = URL.createObjectURL(file)
+  }
+}
+
+function onImageError(event) {
+  event.target.src = defaultAvatar
+}
+
+function simpan() {
+  const formData = new FormData()
+  formData.append('id', user.value.id)
+  formData.append('name', user.value.name)
+
+  if (foto.value) {
+    formData.append('foto', foto.value)
+  }
+
+  console.log('sasasa', [...formData.entries()])
+  store.updateProfile(formData)
+  // contoh:
+  // api.post('/profile/update', formData)
+
+  localStorage.setItem('user', JSON.stringify(user.value))
 }
 
 const goHome = () => {
@@ -209,10 +259,27 @@ onMounted(() => {
 }
 
 .avatar-ring {
-  padding: 3px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.avatar-ring:hover {
+  transform: scale(1.03);
+}
+
+.edit-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6, #0ea5e9);
-  margin-bottom: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
 }
 
 .profile-name {
@@ -313,5 +380,15 @@ onMounted(() => {
 .back-btn:hover {
   background: rgba(255, 255, 255, 0.12);
   transform: translateX(-2px);
+}
+
+.name-input {
+  width: 100%;
+  max-width: 250px;
+}
+
+.upload-input {
+  margin-top: 8px;
+  color: white;
 }
 </style>

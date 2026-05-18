@@ -201,5 +201,23 @@ export const useWargaStore = defineStore('mwarga', {
       this.formregister.password = ''
       this.formregister.confirmpassword = ''
     },
+
+    async updateProfile(formData) {
+      try {
+        for (let pair of formData.entries()) {
+          console.log(pair[0], pair[1])
+        }
+
+        const response = await api.post('/master/warga/profileupdate', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+
+        return response.data
+      } catch (err) {
+        console.log(err)
+      }
+    },
   },
 })
