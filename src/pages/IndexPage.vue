@@ -27,6 +27,29 @@
         </div>
       </div>
 
+      <!-- Saldo Card -->
+      <div class="glass-card saldo-card">
+        <div class="saldo-header">
+          <div>
+            <div class="saldo-label">Saldo Kas</div>
+            <div class="saldo-value">Rp {{ formatPrice(storecuaca.saldoreal) }}</div>
+          </div>
+
+          <div class="saldo-icon">
+            <q-icon name="account_balance_wallet" size="28px" />
+          </div>
+        </div>
+
+        <div class="saldo-info">
+          <div class="saldo-chip positive">
+            <q-icon name="trending_up" size="14px" />
+            Aktif
+          </div>
+
+          <div class="saldo-date">Update Hari Ini</div>
+        </div>
+      </div>
+
       <!-- Menu Grid -->
       <div class="glass-card menu-section">
         <div class="section-label">Menu</div>
@@ -104,6 +127,7 @@ const pageLoading = ref(true)
 const storecuaca = useCuacaStore()
 const storenotif = usenotifikasiStore()
 useAutoLogout(router)
+const previewAvatar = ref(null)
 const apiUrl = import.meta.env.VITE_API_URL
 const backendUrl = apiUrl.replace('/api/v1', '')
 function onImageError(event) {
@@ -135,6 +159,7 @@ onMounted(async () => {
     console.error('Gagal parsing menu data', e)
   }
 
+  await storecuaca.saldo_real()
   await storecuaca.getCuaca()
   storecuaca.jadwatshalat()
   pageLoading.value = false
@@ -147,6 +172,10 @@ const groupedCuaca = computed(() =>
     return acc
   }, {}),
 )
+
+const formatPrice = (price) => {
+  return Number(price || 0).toLocaleString('id-ID')
+}
 
 onMounted(async () => {
   const token = await requestFcmToken()
@@ -453,5 +482,97 @@ onMounted(async () => {
   .menu-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+.saldo-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.saldo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(14, 165, 233, 0.08));
+  pointer-events: none;
+}
+
+.saldo-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  transform: skewX(-25deg);
+  animation: shimmer 5s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 160%;
+  }
+}
+
+.saldo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.saldo-label {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.saldo-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.15);
+}
+
+.saldo-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #0ea5e9);
+  color: white;
+  box-shadow:
+    0 10px 25px rgba(14, 165, 233, 0.35),
+    0 0 20px rgba(99, 102, 241, 0.35);
+}
+
+.saldo-info {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.saldo-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.saldo-chip.positive {
+  background: rgba(34, 197, 94, 0.18);
+  color: #4ade80;
+}
+
+.saldo-date {
+  font-size: 11px;
+  color: #94a3b8;
 }
 </style>

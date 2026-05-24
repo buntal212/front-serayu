@@ -35,7 +35,12 @@
         <div v-for="w in store.items" :key="w.id" class="glass-card warga-card" @click="editx(w)">
           <div class="card-top">
             <div class="warga-avatar">
-              <q-icon name="family_restroom" size="28px" color="grey-5" />
+              <q-avatar size="50px">
+                <img
+                  :src="previewAvatar ? previewAvatar : backendUrl + w.foto"
+                  @error="onImageError"
+                />
+              </q-avatar>
             </div>
             <q-btn
               round
@@ -65,10 +70,17 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const store = useWargaStore()
 const emits = defineEmits(['add', 'edit', 'hapus'])
-
 function goHome() {
   router.push('/')
 }
+
+const apiUrl = import.meta.env.VITE_API_URL
+const backendUrl = apiUrl.replace('/api/v1', '')
+function onImageError(event) {
+  event.target.src = defaultAvatar
+}
+const defaultAvatar =
+  'https://i0.wp.com/www.rukita.co/stories/wp-content/uploads/2022/04/3b0440d25a78d581953ddc0a1237615e.webp?w=600&ssl=1'
 
 function editx(data) {
   const user = JSON.parse(localStorage.getItem('user') || '{}')

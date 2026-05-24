@@ -56,6 +56,7 @@ const carabayar = [
 ]
 
 onMounted(() => {
+  storeBulan.items = []
   storeBulan.getlist()
   const bulanSekarang = String(new Date().getMonth() + 1).padStart(2, '0')
   if (!store.params.bulan) {

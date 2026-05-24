@@ -6,6 +6,7 @@ export const useCuacaStore = defineStore('cuaca', {
   state: () => ({
     loading: false,
     items: [],
+    saldoreal: [],
     rawData: [],
     listJam: [],
   }),
@@ -79,7 +80,18 @@ export const useCuacaStore = defineStore('cuaca', {
           this.items = { ...jadwal }
           delete this.items.tanggal
         }
-        console.log('jadwal shalat hari ini', this.items)
+      } catch (err) {
+        notifError(err.response?.data?.message || 'Gagal menghapus data')
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+    async saldo_real() {
+      this.loading = true
+      try {
+        const data = await api.get('/saldo_real')
+        this.saldoreal = data?.data?.saldo
       } catch (err) {
         notifError(err.response?.data?.message || 'Gagal menghapus data')
         throw err

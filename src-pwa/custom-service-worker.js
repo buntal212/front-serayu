@@ -11,7 +11,7 @@ import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { NetworkFirst, CacheFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 
-const CACHE_VERSION = 'v2.3.5'
+const CACHE_VERSION = 'v2.4.6'
 
 // ----------------------
 // Service Worker Setup

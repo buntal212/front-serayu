@@ -75,6 +75,7 @@ onMounted(async () => {
   qrBendahara.value = await QRCode.toDataURL('Bendahara')
 })
 onMounted(() => {
+  storebulan.items = []
   storebulan.getlist()
 })
 
