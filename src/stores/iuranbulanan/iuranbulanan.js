@@ -71,14 +71,14 @@ export const usePembayaranIuranBulananStore = defineStore('pembayaranIuranbulana
       this.form.id = ''
       this.form.notrans = ''
       // this.form.bulan = new Date().getMonth() + 1
-      this.form.tahun = new Date().getFullYear()
+      // this.form.tahun = new Date().getFullYear()
       this.form.warga_id = ''
       this.form.jeniskewargaan = ''
       this.form.jumlah = ''
       this.form.carabayar = ''
       this.form.keterangan = ''
-      const bulanSekarang = String(new Date().getMonth() + 1).padStart(2, '0')
-      this.form.bulan = bulanSekarang
+      // const bulanSekarang = String(new Date().getMonth() + 1).padStart(2, '0')
+      // this.form.bulan = bulanSekarang
     },
   },
 })

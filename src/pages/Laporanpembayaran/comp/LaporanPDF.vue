@@ -74,6 +74,33 @@
             {{ formatTanggal(item.created_at) }}
           </td>
         </tr>
+
+        <!-- TOTAL -->
+        <tr class="summary-row">
+          <td colspan="5" class="text-right summary-label">TOTAL NOMINAL</td>
+
+          <td colspan="2" class="summary-value">
+            Rp. {{ formatDouble(items.reduce((a, b) => a + Number(b.nominal || 0), 0)) }}
+          </td>
+        </tr>
+
+        <!-- TOTAL LUNAS -->
+        <tr class="summary-row">
+          <td colspan="5" class="text-right summary-label">TOTAL LUNAS</td>
+
+          <td colspan="2" class="summary-value">
+            {{ items.filter((x) => x.notrans).length }} Orang
+          </td>
+        </tr>
+
+        <!-- TOTAL BELUM -->
+        <tr class="summary-row">
+          <td colspan="5" class="text-right summary-label">TOTAL BELUM BAYAR</td>
+
+          <td colspan="2" class="summary-value">
+            {{ items.filter((x) => !x.notrans).length }} Orang
+          </td>
+        </tr>
       </tbody>
     </table>
 
@@ -173,7 +200,6 @@ onMounted(async () => {
   font-family: Arial, Helvetica, sans-serif;
 
   width: 100%;
-  min-height: auto;
 
   overflow: visible;
   box-sizing: border-box;
@@ -196,49 +222,30 @@ onMounted(async () => {
 .report-table {
   width: 100%;
   border-collapse: collapse;
+
   margin-top: 10px;
 
-  page-break-inside: auto;
+  /* PENTING */
+  page-break-after: auto;
 }
 
 .report-table thead {
   display: table-header-group;
 }
 
-.report-table tfoot {
-  display: table-footer-group;
+.report-table tbody {
+  display: table-row-group;
 }
 
 .report-table tr {
-  page-break-inside: avoid;
   break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .report-table td,
 .report-table th {
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-
-.report-table thead th {
-  background: #1e293b;
-  color: #ffffff;
-
-  font-size: 11px;
-  font-weight: 700;
-
-  padding: 10px 8px;
-
-  border: 1px solid #cbd5e1;
-
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.report-table tbody td {
   border: 1px solid #d1d5db;
   padding: 8px;
-
   vertical-align: middle;
   font-size: 11px;
 }
@@ -365,8 +372,6 @@ onMounted(async () => {
 
   font-size: 11px;
   color: #374151;
-
-  page-break-inside: avoid;
 }
 
 /* ======================
@@ -389,9 +394,6 @@ onMounted(async () => {
 
   text-align: center;
   vertical-align: top;
-
-  page-break-inside: avoid;
-  break-inside: avoid;
 }
 
 .ttd-city {
@@ -425,5 +427,57 @@ onMounted(async () => {
   margin-top: 5px;
 
   color: #111827;
+}
+
+@media print {
+  .pdf-page {
+    padding-bottom: 40px;
+  }
+
+  .ttd-table {
+    margin-top: 25px;
+  }
+
+  tr,
+  td,
+  th {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+/* ======================
+   SUMMARY ROW
+====================== */
+
+.summary-row {
+  background: #e2e8f0 !important;
+}
+
+.summary-label {
+  font-weight: 700;
+  color: #111827;
+
+  padding: 10px !important;
+}
+
+.summary-value {
+  font-weight: 700;
+  color: #111827;
+
+  text-align: center;
+
+  padding: 10px !important;
+}
+
+/* HILANGKAN GARIS BAWAH TERAKHIR TABLE */
+
+.report-table tbody tr:last-child td {
+  border-bottom: 0 !important;
+}
+.report-table thead::before {
+  content: '';
+  display: block;
+  height: 20px;
 }
 </style>

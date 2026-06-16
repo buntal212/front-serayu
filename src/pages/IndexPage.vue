@@ -139,7 +139,10 @@ const defaultAvatar =
 const user = ref({ name: '', email: '', avatar: '' })
 const menuItems = ref([])
 
-const navigate = (link) => router.push(link)
+const navigate = async (link) => {
+  if (!link) return
+  await router.push(link)
+}
 
 onMounted(async () => {
   pageLoading.value = true
@@ -147,22 +150,26 @@ onMounted(async () => {
   try {
     const userData = localStorage.getItem('user') || '{}'
     user.value = JSON.parse(userData)
-  } catch (e) {
-    console.error('Gagal parsing user data', e)
-  }
 
-  try {
     const menuData = localStorage.getItem('menus') || '[]'
     const parsedMenu = JSON.parse(menuData)
     if (Array.isArray(parsedMenu)) menuItems.value = parsedMenu
-  } catch (e) {
-    console.error('Gagal parsing menu data', e)
-  }
 
-  await storecuaca.saldo_real()
-  await storecuaca.getCuaca()
-  storecuaca.jadwatshalat()
-  pageLoading.value = false
+    await Promise.allSettled([
+      storecuaca.saldo_real(),
+      storecuaca.getCuaca(),
+      storecuaca.jadwatshalat(),
+      storenotif.getUnreadCount(),
+    ])
+
+    requestFcmToken().then((token) => {
+      if (token) storenotif.simpantoken(token)
+    })
+  } catch (e) {
+    console.error(e)
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const { listJam } = storeToRefs(storecuaca)
