@@ -16,7 +16,7 @@
           <div class="avatar-ring cursor-pointer" @click="$refs.fotoPicker.pickFiles()">
             <q-avatar size="90px">
               <img
-                :src="previewAvatar ? previewAvatar : backendUrl + user.foto"
+                :src="previewAvatar ? previewAvatar : (user.foto ? backendUrl + (user.foto.startsWith('/') ? user.foto : '/' + user.foto) : 'https://cdn.quasar.dev/img/avatar.png')"
                 @error="onImageError"
               />
             </q-avatar>

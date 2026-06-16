@@ -16,7 +16,7 @@
           class="search-input"
           dark
           clearable
-          @clear="search = ''"
+          @clear="clearSearch"
           @update:model-value="store.getlist()"
         >
           <template #append>
@@ -36,10 +36,7 @@
           <div class="card-top">
             <div class="warga-avatar">
               <q-avatar size="50px">
-                <img
-                  :src="previewAvatar ? previewAvatar : backendUrl + w.foto"
-                  @error="onImageError"
-                />
+                <img :src="getFotoUrl(w.foto)" @error="onImageError" />
               </q-avatar>
             </div>
             <q-btn
@@ -74,26 +71,49 @@ function goHome() {
   router.push('/')
 }
 
-const apiUrl = import.meta.env.VITE_API_URL
-const backendUrl = apiUrl.replace('/api/v1', '')
-function onImageError(event) {
-  event.target.src = defaultAvatar
+function clearSearch() {
+  store.params.q = ''
+  store.getlist()
 }
+
+const apiUrl = import.meta.env.VITE_API_URL
+const backendUrl = apiUrl.replace('/api/v1', '').replace(/\/$/, '')
 const defaultAvatar =
   'https://i0.wp.com/www.rukita.co/stories/wp-content/uploads/2022/04/3b0440d25a78d581953ddc0a1237615e.webp?w=600&ssl=1'
 
+function getFotoUrl(foto) {
+  if (!foto) return defaultAvatar
+
+  const path = String(foto).trim()
+
+  if (!path || path === 'null' || path === 'undefined') {
+    return defaultAvatar
+  }
+
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path
+  }
+
+  return `${backendUrl}/${path.replace(/^\/+/, '')}`
+}
+
+function onImageError(event) {
+  if (event.target.src !== defaultAvatar) {
+    event.target.src = defaultAvatar
+  }
+}
+
 function editx(data) {
   const user = JSON.parse(localStorage.getItem('user') || '{}')
-  // console.log(user.nik)
+
   if (data.nokk === '3574030506061835' || data.nokk === 3574030506061835) {
-    if (user.nik != '11111' || user.nik != 11111) {
+    if (user.nik != '11111' && user.nik != 11111) {
       notifError('ANDA TIDAK PUNYA AKSES UNTUK MELIHAT DATA INI...!!!')
-    } else {
-      emits('edit', data)
+      return
     }
-  } else {
-    emits('edit', data)
   }
+
+  emits('edit', data)
 }
 </script>
 

@@ -15,7 +15,11 @@
           <div class="avatar-ring">
             <q-avatar size="72px">
               <img
-                :src="previewAvatar ? previewAvatar : backendUrl + user.foto"
+                :src="
+                  user.foto
+                    ? `${backendUrl}${user.foto.startsWith('/') ? '' : '/'}${user.foto}`
+                    : 'https://cdn.quasar.dev/img/avatar.png'
+                "
                 @error="onImageError"
               />
             </q-avatar>
@@ -127,7 +131,6 @@ const pageLoading = ref(true)
 const storecuaca = useCuacaStore()
 const storenotif = usenotifikasiStore()
 useAutoLogout(router)
-const previewAvatar = ref(null)
 const apiUrl = import.meta.env.VITE_API_URL
 const backendUrl = apiUrl.replace('/api/v1', '')
 function onImageError(event) {
@@ -183,15 +186,6 @@ const groupedCuaca = computed(() =>
 const formatPrice = (price) => {
   return Number(price || 0).toLocaleString('id-ID')
 }
-
-onMounted(async () => {
-  const token = await requestFcmToken()
-  storenotif.getUnreadCount()
-  console.log('🔥 TOKEN FINAL:', token)
-  if (token) {
-    await storenotif.simpantoken(token)
-  }
-})
 </script>
 
 <style scoped>
